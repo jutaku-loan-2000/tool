@@ -758,6 +758,14 @@ footer strong{color:var(--muted)}
   function yen(v){ return Math.round(v).toLocaleString("ja-JP") + "円"; }
   function signed(v){ return (v >= 0 ? "+" : "−") + Math.round(Math.abs(v)).toLocaleString("ja-JP") + "円"; }
 
+  function durTxt(m){
+    m = Math.round(m);
+    var y = Math.floor(m/12), mm = m%12;
+    if (y && mm) return y + "年" + mm + "ヶ月";
+    if (y) return y + "年";
+    return mm + "ヶ月";
+  }
+
   function ymTxt(sy, sm, m){ var d = ym(sy, sm, m); return d.y + "年" + d.m + "月"; }
 
   function ym(sy, sm, m){
@@ -1407,12 +1415,23 @@ footer strong{color:var(--muted)}
         var b = simulate(Object.assign({}, oo, { mode:"wait" }));
         var r = (hasDed && b.net < a.net) ? b : a;
         e.className = "rowfx";
-        e.innerHTML = "<b>この行だけ</b>で計算すると ── 完済 <b>" + ymTxt(o.sy, o.sm, r.months)
-          + "</b>、本当に払う利息 <b>" + yen(r.net) + "</b>"
-          + "（繰り上げ返済をしない場合より <b>" + yen(none.net - r.net) + "</b> 少ない）"
+        var shorter = none.months - r.months;
+        var saved   = none.net - r.net;
+        e.innerHTML = "<b>この行だけ</b>を入れた場合"
+          + "<br>完済 <b>" + ymTxt(o.sy, o.sm, r.months) + "</b>"
+          + "　── 何も返さなければ " + ymTxt(o.sy, o.sm, none.months)
+          + (shorter > 0 ? "。<b>" + durTxt(shorter) + " 早く終わります</b>" : "。変わりません")
+          + "<br>本当に払う利息 <b>" + yen(r.net) + "</b>"
+          + "　── 何も返さなければ " + yen(none.net)
+          + (saved > 0 ? "。<b>" + yen(saved) + " 減ります</b>" : "。変わりません")
+          + (rw.id === lastOn
+              ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の返済額はそのままで"
+                + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が変わります。"
+                + "何もしなければ、契約どおりの日まで払い続けます。</span>"
+              : "")
           + (many && rw.id === lastOn
-              ? "<br>※ この数字は、<b>その行だけを使った場合</b>のものです。"
-                + "行どうしを足しても、①②③を合わせた結果にはなりません。合わせた結果は下の判定と表に出ます。"
+              ? "<br><span style=\"color:#8A8177\">※ この数字は<b>その行だけ</b>を入れた場合のものです。"
+                + "行どうしを足しても、①②③を合わせた結果にはなりません。合わせた結果は下の判定と表に出ます。</span>"
               : "");
       });
     })();
