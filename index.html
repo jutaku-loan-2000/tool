@@ -1506,6 +1506,12 @@ footer strong{color:var(--muted)}
     if (mq.addEventListener) mq.addEventListener("change", render);
   }
   render();
+
+  // ブラウザはリロード時に、計算が終わったあとから入力欄の値を戻すことがある。
+  // そのままだと「入力は入っているのに画面が古い」状態になるので、戻り終わってから計算し直す。
+  window.addEventListener("load", function(){ render(); });
+  window.addEventListener("pageshow", function(){ setTimeout(render, 0); });
+
 })();
 </script>
 
