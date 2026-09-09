@@ -215,6 +215,12 @@ h1{
 .rowfx{display:block;margin-top:8px;padding:9px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px;line-height:1.65;color:var(--ink)}
 .rowfx b{font-variant-numeric:tabular-nums}
 .rowfx.off{display:none}
+.rowfx table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:12.5px}
+.rowfx .fxt th{font-weight:600;color:#8A8177;text-align:right;padding:2px 12px 6px;font-size:11.5px;white-space:nowrap}
+.rowfx .fxt th:first-child{text-align:left;padding-left:0}
+.rowfx .fxt td{padding:3px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rowfx .fxt td:first-child{text-align:left;color:#8A8177;padding-left:0}
+.rowfx .fxt td:last-child{color:#2E7D5B;font-weight:700;padding-right:0}
 .rowtag{
   margin-left:9px;font-size:11px;font-weight:700;letter-spacing:.04em;
   padding:2px 9px;border-radius:999px;vertical-align:1px;white-space:nowrap;
@@ -1418,12 +1424,14 @@ footer strong{color:var(--muted)}
         var shorter = none.months - r.months;
         var saved   = none.net - r.net;
         e.innerHTML = "<b>この行だけ</b>を入れた場合"
-          + "<br>完済 <b>" + ymTxt(o.sy, o.sm, r.months) + "</b>"
-          + "　── 何も返さなければ " + ymTxt(o.sy, o.sm, none.months)
-          + (shorter > 0 ? "。<b>" + durTxt(shorter) + " 早く終わります</b>" : "。変わりません")
-          + "<br>本当に払う利息 <b>" + yen(r.net) + "</b>"
-          + "　── 何も返さなければ " + yen(none.net)
-          + (saved > 0 ? "。<b>" + yen(saved) + " 減ります</b>" : "。変わりません")
+          + "<table class=\"fxt\"><tr><th></th><th>繰り上げ返済しない</th>"
+          + "<th>この行を入れる</th><th></th></tr>"
+          + "<tr><td>完済</td><td>" + ymTxt(o.sy, o.sm, none.months) + "</td>"
+          + "<td><b>" + ymTxt(o.sy, o.sm, r.months) + "</b></td>"
+          + "<td>" + (shorter > 0 ? durTxt(shorter) + " 早まる" : "変わらない") + "</td></tr>"
+          + "<tr><td>本当に払う利息</td><td>" + yen(none.net) + "</td>"
+          + "<td><b>" + yen(r.net) + "</b></td>"
+          + "<td>" + (saved > 0 ? yen(saved) + " 減る" : "変わらない") + "</td></tr></table>"
           + (rw.id === lastOn
               ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の返済額はそのままで"
                 + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が変わります。"
