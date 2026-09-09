@@ -218,8 +218,9 @@ h1{
 .nowline{grid-column:1/-1;margin-top:6px;padding:16px 20px;border-radius:12px;
  background:var(--surface-2);border:1px solid var(--line);font-size:15px;line-height:1.7;color:var(--ink)}
 .nowline b{font-variant-numeric:tabular-nums;font-size:19px}
-.nowline .warn{color:#E8232A;font-weight:700}
+.nowline .ng{color:#E8232A;font-weight:700}
 .nowline .cap{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+.nowline .gap{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .rowfx table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:12.5px}
 .rowfx .fxt th{font-weight:600;color:#8A8177;text-align:right;padding:2px 12px 6px;font-size:11.5px;white-space:nowrap}
 .rowfx .fxt th:first-child{text-align:left;padding-left:0}
@@ -428,6 +429,12 @@ footer strong{color:var(--muted)}
         <label for="sy">上のローン残高は、いつ時点のものですか</label>
         <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
         <span class="hint"><b>ここを起点に、完済の年月を計算します。</b>通帳や銀行アプリで残高を見た月を入れてください（初期値は今月）</span>
+      </div>
+
+      <div class="field">
+        <label for="endY">契約の最終返済日（返済予定表・契約書に書いてある月）</label>
+        <div class="inputrow"><input id="endY" type="number" step="1" placeholder="2053"><span class="unit">年</span><input id="endM" type="number" step="1" min="1" max="12" placeholder="5"><span class="unit">月</span></div>
+        <span class="hint">分からなければ空欄でOK。入れると「今の返済額のままで契約どおりに終わるか」を判定します</span>
       </div>
 
       <div class="nowline" id="nowLine"></div>
@@ -780,6 +787,11 @@ footer strong{color:var(--muted)}
     if (sm) sm.value = d.getMonth() + 1;
   })();
 
+  ["endY","endM"].forEach(function(id){
+    var e = document.getElementById(id);
+    if (e) e.addEventListener("input", function(){ render(); });
+  });
+
   function durTxt(m){
     m = Math.round(m);
     var y = Math.floor(m/12), mm = m%12;
@@ -1025,7 +1037,7 @@ footer strong{color:var(--muted)}
       document.getElementById("vHead").textContent = "毎月の返済額が、利息より少なくなっています。数字を確認してください。";
       document.getElementById("vSub").textContent = "この条件だと、ローンが減りません。返済額か金利を見直してください。";
       var nl = document.getElementById("nowLine");
-      if (nl) nl.innerHTML = "<span class=\"warn\">毎月の返済額が、利息より少なくなっています。</span>"
+      if (nl) nl.innerHTML = "<span class=\"ng\">毎月の返済額が、利息より少なくなっています。</span>"
         + "<span class=\"cap\">この条件だとローンが減らないので、完済の年月が出せません。</span>";
       return;
     }
@@ -1037,14 +1049,35 @@ footer strong{color:var(--muted)}
     (function(){
       var e = document.getElementById("nowLine"); if (!e) return;
       if (!isFinite(none.months) || none.months <= 0 || none.months > 1200){
-        e.innerHTML = "<span class=\"warn\">この数字だと、完済まで100年以上かかります。</span>"
+        e.innerHTML = "<span class=\"ng\">この数字だと、完済まで100年以上かかります。</span>"
           + "<span class=\"cap\">残高・金利・毎月の返済額のどれかを見直してください。</span>";
         return;
       }
-      e.innerHTML = "このまま繰り上げ返済をしないと、<b>" + ymTxt(o.sy, o.sm, none.months) + "</b> に完済します"
-        + "（あと " + durTxt(none.months) + "）"
-        + "<span class=\"cap\">今の金利のまま、毎月 " + yen(o.pay) + " を払い続けた場合です。"
-        + "これが、下の判定で比べる基準になります。</span>";
+      var txt = "毎月 " + yen(o.pay) + " を払い続けると、<b>" + ymTxt(o.sy, o.sm, none.months)
+        + "</b> に終わる計算です（あと " + durTxt(none.months) + "）"
+        + "<span class=\"cap\">いまの金利 " + (o.rate*100).toFixed(2) + "％ で、"
+        + "<b>毎月の返済額を変えずに</b>払い続けた場合の計算です。これが下の判定で比べる基準になります。</span>";
+
+      var ey = Math.round(num(document.getElementById("endY").value));
+      var em = Math.round(num(document.getElementById("endM").value));
+      if (ey > 1900 && em >= 1 && em <= 12){
+        var need = (ey*12 + (em-1)) - (o.sy*12 + (o.sm-1));
+        var over = none.months - need;
+        if (over > 0){
+          txt += "<div class=\"gap\">契約の最終返済日は <b>" + ey + "年" + em + "月</b>。"
+            + "いまの返済額のままだと <b class=\"ng\">" + durTxt(over) + " 足りません</b>。"
+            + "<span class=\"cap\">終わりの日は契約で決まっていて動きません。"
+            + "足りない分は、5年ごとの見直しで<b>毎月の返済額が上がって</b>調整されます"
+            + "（変動金利の「しわ寄せ」）。上の年月は、その値上げがなかった場合の数字です。</span></div>";
+        } else if (over < 0){
+          txt += "<div class=\"gap\">契約の最終返済日は <b>" + ey + "年" + em + "月</b>。"
+            + "いまの返済額なら <b>" + durTxt(-over) + " 早く</b>終わる計算です。"
+            + "<span class=\"cap\">金利が下がったあとに借り換えた場合などに、こうなります。</span></div>";
+        } else {
+          txt += "<div class=\"gap\">契約の最終返済日 <b>" + ey + "年" + em + "月</b> と、ぴったり合っています。</div>";
+        }
+      }
+      e.innerHTML = txt;
     })();
 
     var diff = now.net - wait.net;           // >0 なら待つほうが得
