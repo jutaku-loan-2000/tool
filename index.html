@@ -1512,6 +1512,23 @@ footer strong{color:var(--muted)}
   window.addEventListener("load", function(){ render(); });
   window.addEventListener("pageshow", function(){ setTimeout(render, 0); });
 
+  // どんな形で値が入っても取りこぼさないようにする。
+  // （ブラウザの復元・自動入力・拡張機能は input イベントを出さないことがある）
+  document.addEventListener("input", function(){ render(); }, true);
+  document.addEventListener("change", function(){ render(); }, true);
+  (function(){
+    function sig(){
+      return [].slice.call(document.querySelectorAll("input, select"))
+        .map(function(e){ return e.value; }).join("|");
+    }
+    var last = sig(), t0 = Date.now();
+    var iv = setInterval(function(){
+      var now = sig();
+      if (now !== last){ last = now; render(); }
+      if (Date.now() - t0 > 6000) clearInterval(iv);
+    }, 150);
+  })();
+
 })();
 </script>
 
