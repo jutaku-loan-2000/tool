@@ -551,37 +551,7 @@ footer strong{color:var(--muted)}
 </section>
 
 <section class="card">
-  <div class="card-hd"><h2 id="whyHead">なぜ、いま返しても得しないのか</h2><span class="note" id="unitNote"></span></div>
-  <div class="card-bd">
-    <p class="lead-note" id="unitLead"></p>
-    <div class="blocks">
-      <div class="blk now">
-        <h4 id="h1t"></h4>
-        <div class="calc">
-          <div><span>払わずに済む利息（年）</span><span id="e1">+11,000円</span></div>
-          <div><span>戻ってこなくなるお金（年）</span><span id="e2">−10,000円</span></div>
-          <span class="rule"></span>
-          <div class="total"><span>得するのは</span><span id="e3">1,000円</span></div>
-        </div>
-        <p class="cap">住宅ローン控除を受けている間は、利息が減っても、戻ってくるお金が同じだけ減ります。</p>
-      </div>
-      <div class="blk after">
-        <h4 id="h2t"></h4>
-        <div class="calc">
-          <div><span>払わずに済む利息（年）</span><span id="e4">+11,000円</span></div>
-          <div><span>戻ってこなくなるお金（年）</span><span id="e5">0円</span></div>
-          <span class="rule"></span>
-          <div class="total"><span>得するのは</span><span id="e6">11,000円</span></div>
-        </div>
-        <p class="cap" id="e7"></p>
-      </div>
-    </div>
-    <p id="bridge" class="bridge"></p>
-  </div>
-</section>
-
-<section class="card">
-  <div class="card-hd"><h2 id="cmpHead">3つのやり方を比べる</h2><span class="note">完済までの合計</span></div>
+  <div class="card-hd"><h2 id="cmpHead">やり方を比べる</h2><span class="note">完済までの合計</span></div>
   <div class="card-bd">
     <p class="lead-note" id="cmpLead"></p>
     <div class="tablewrap">
@@ -1110,7 +1080,9 @@ footer strong{color:var(--muted)}
     // 入力をずらした計画を黙って表に出すと、画面の数字が入力と合わなくなる。
     // 提案はボタンにして、押されたときだけ入力そのものを書き換える。
     var canStartEarlier = false;
-    var couldStartEarlier = identical && earlierGain > 0;
+    // ②の開始を早める提案は出さない。開始を早めると「その分のお金を追加で入れる」
+    // ことになり、同じ金額を早く入れる比較になっていない（お金が増えた分だけ得に見える）。
+    var couldStartEarlier = false;
     var alt = canStartEarlier ? earlier : wait;
     var best = canStartEarlier ? earlier : (waitBetter ? wait : now);
 
@@ -1221,64 +1193,11 @@ footer strong{color:var(--muted)}
         + "完済までの差は " + yen(Math.abs(diff)) + "。";
     }
 
-    document.getElementById("whyHead").textContent =
-      !hasExtra ? "なぜ、いま返しても得しないのか"
-      : !hasDed ? "なぜ、いま返したほうが得なのか"
-      : (waitBetter && !isEven) ? "なぜ、いま返しても得しないのか"
-      : "いま返すのと、控除が終わってから返すのとの差";
-
-    // このカードは「なぜ効かないか」の仕組みを見せる場所。
-    // 入力から出した金額を使うと足し算の出どころが読めず、かえって混乱する。
-    // 誰にとっても同じ100万円で固定し、あなたの実額は下の1行だけに出す。
-    var U = 1000000;
-    var uTxt = "100万円";
-    document.getElementById("unitNote").textContent = "誰でも同じ100万円の例です";
-    document.getElementById("unitLead").innerHTML =
-      "<b>いま手元に100万円あったとします。</b>それを<b>いま返す</b>のと、"
-      + "<b>住宅ローン控除が終わってから返す</b>のとで、どれだけ違うかを見ます。"
-      + "<br><span class='cap'>あなたの計画でいくら変わるかは、このカードの下と、次の表に出ます。</span>";
-    document.getElementById("h1t").textContent = "いま " + uTxt + " を繰り上げ返済すると";
-    document.getElementById("h2t").textContent = "住宅ローン控除が終わったあとに、同じ " + uTxt + " を返すと";
-    var iy = U * o.rate, dy = U * o.dedRate;
-    document.getElementById("e1").textContent = signed(iy);
-    document.getElementById("e2").textContent = signed(-dy);
-    document.getElementById("e3").textContent = yen(iy - dy);
-    document.getElementById("e4").textContent = signed(iy);
-    document.getElementById("e5").textContent = "0円";
-    document.getElementById("e6").textContent = yen(iy);
-    var ratio = (iy - dy) > 0 ? (iy / (iy - dy)) : 0;
-    document.getElementById("e7").textContent = (o.dedRate > 0 && ratio >= 1.5)
-      ? "同じ金額でも、効き目がおよそ " + Math.round(ratio) + "倍 になります。"
-      : "住宅ローン控除がなくなるぶん、利息の削減がそのまま残ります。";
-
-    // あなたの計画との橋渡し
-    var br = document.getElementById("bridge");
     var per = [];
     if (o.monthly > 0) per.push("毎月 " + Math.round(o.monthly).toLocaleString("ja-JP") + "円");
     if (o.yearly > 0) per.push("毎年 " + Math.round(o.yearly).toLocaleString("ja-JP") + "円");
     if (o.lump > 0) per.push("一度に " + Math.round(o.lump).toLocaleString("ja-JP") + "円");
     var perTxt = per.join("・");
-    if (!hasExtra){
-      br.innerHTML = "<b>上の「繰り上げ返済の計画」にあなたの金額を入れてください。</b>あなたの場合いくら変わるのかが、ここと下の表に出ます。";
-    } else if (!hasDed){
-      br.innerHTML = "<b>住宅ローン控除がないので、返した分がそのまま得になります。</b>早く返すほど得です。";
-    } else if (identical){
-      br.innerHTML = "<b>ここまでは「100万円あたりで、どちらが効くか」の話です。</b>"
-        + "あなたの計画（" + perTxt + "）は" + psY + "年" + psM + "月から、つまり控除が終わったあとなので、"
-        + "この比較での差は0円です。"
-        + (couldStartEarlier
-            ? "<b>効くのは別のところです。② の開始を今月にすると、合計 " + yen(earlierGain) + " 変わります。</b>"
-              + "上の判定にあるボタンで試せます。"
-            : "");
-    } else {
-      // 上の2ブロックは「率」の話。実際にいくら違うのかは、必ず金額で出す。
-      br.innerHTML = "<b>ただし、ここまでは100万円あたりの効き方です。</b>"
-        + "あなたの計画（" + perTxt + "）を完済まで通すと、"
-        + (waitBetter
-            ? o.dedEnd + "年の住宅ローン控除が終わるまで待って得するのは <b>合計 " + yen(diff) + "</b> です。"
-            : "いまから返すほうが <b>合計 " + yen(Math.abs(diff)) + "</b> 得です。")
-        + (isEven ? " 比率ほどの差にはなりません。貯められる期間が短いからです。" : "");
-    }
 
     // comparison table
     var rows = [
