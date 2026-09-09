@@ -1,0 +1,1464 @@
+<title>返すか、待つか</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#F6F8F7;
+  --surface:#FFFFFF;
+  --surface-2:#EFF3F1;
+  --ink:#151F1C;
+  --muted:#5E6D68;
+  --faint:#8B9994;
+  --line:#DCE4E1;
+  --line-strong:#C3CFCB;
+  --accent:#0F6E5C;
+  --accent-ink:#0B584A;
+  --accent-soft:#DFEFE9;
+  --hold:#A96A22;
+  --hold-soft:#F7EBDA;
+  --alert:#A63D40;
+  --calc:#3A5A8C;
+  --calc-soft:#E6ECF5;
+  --on-brand:#FFFFFF;
+  --shadow:0 1px 2px rgba(21,31,28,.05), 0 8px 24px -12px rgba(21,31,28,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1312;
+    --surface:#151E1C;
+    --surface-2:#1B2523;
+    --ink:#E7EEEB;
+    --muted:#93A49E;
+    --faint:#6F817B;
+    --line:#243230;
+    --line-strong:#33433F;
+    --accent:#57C4A8;
+    --accent-ink:#7FD6BF;
+    --accent-soft:#123029;
+    --hold:#D9A05A;
+    --hold-soft:#2C2417;
+    --alert:#D8767A;
+    --calc:#8FB3E0;
+    --calc-soft:#16202E;
+    --on-brand:#0D1312;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1312;
+  --surface:#151E1C;
+  --surface-2:#1B2523;
+  --ink:#E7EEEB;
+  --muted:#93A49E;
+  --faint:#6F817B;
+  --line:#243230;
+  --line-strong:#33433F;
+  --accent:#57C4A8;
+  --accent-ink:#7FD6BF;
+  --accent-soft:#123029;
+  --hold:#D9A05A;
+  --hold-soft:#2C2417;
+  --alert:#D8767A;
+  --calc:#8FB3E0;
+  --calc-soft:#16202E;
+  --on-brand:#0D1312;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px;margin:0 auto;padding:40px 20px 80px;display:flex;flex-direction:column;gap:36px}
+
+/* ---------- header ---------- */
+header{display:flex;flex-direction:column;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{
+  font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+h1{
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-weight:700;font-size:clamp(30px,5.6vw,44px);line-height:1.3;margin:0;
+  text-wrap:balance;letter-spacing:.01em;
+}
+.lede{margin:0;color:var(--muted);font-size:15px;max-width:60ch}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--shadow);
+}
+.card-hd{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:18px 22px;border-bottom:1px solid var(--line);
+}
+.card-hd h2{
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-size:18px;font-weight:600;margin:0;letter-spacing:.02em;
+}
+.card-hd .note{font-size:12px;color:var(--faint)}
+.card-bd{padding:22px}
+
+/* ---------- form ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 20px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:13px;font-weight:500;color:var(--muted)}
+.field .hint{font-size:11.5px;color:var(--faint);line-height:1.5}
+.inputrow{display:flex;align-items:stretch;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);overflow:hidden}
+.inputrow:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inputrow input,.inputrow select{
+  flex:1;min-width:0;border:0;background:transparent;color:var(--ink);
+  font:inherit;font-weight:700;font-variant-numeric:tabular-nums;
+  padding:9px 12px;text-align:right;
+}
+.inputrow select{text-align:left;font-weight:500;cursor:pointer}
+.inputrow input:focus,.inputrow select:focus{outline:none}
+.unit{
+  display:flex;align-items:center;padding:0 11px;background:var(--surface-2);
+  border-left:1px solid var(--line);font-size:12.5px;color:var(--muted);white-space:nowrap;
+}
+
+/* ---------- advanced ---------- */
+.adv{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}
+.adv > summary{
+  cursor:pointer;font-size:14px;font-weight:700;color:var(--accent-ink);
+  list-style:none;display:flex;align-items:center;gap:8px;padding:4px 0;
+}
+.adv > summary::-webkit-details-marker{display:none}
+.adv > summary::before{content:"＋";font-weight:700;font-size:15px}
+.adv[open] > summary::before{content:"−"}
+.adv > summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.adv .grid{margin-top:16px}
+.field.wide{grid-column:1/-1}
+.field.wide .inputrow{flex-wrap:wrap}
+.field.wide .inputrow input{min-width:104px;flex:0 1 auto;text-align:right}
+.field.wide .inputrow input.amt{min-width:160px;flex:1 1 160px}
+.field.wide .inputrow > .unit:last-child{flex:1 1 auto}
+.adv .subhead{
+  grid-column:1/-1;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--muted);
+  border-bottom:1px solid var(--line);padding-bottom:5px;margin-top:6px;
+}
+
+/* ---------- faq ---------- */
+.faq{display:flex;flex-direction:column;gap:2px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:last-child{border-bottom:0}
+.faq summary{
+  cursor:pointer;padding:13px 26px 13px 0;font-weight:700;font-size:14.5px;
+  list-style:none;position:relative;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{
+  content:"＋";position:absolute;right:2px;top:12px;color:var(--accent);font-weight:700;
+}
+.faq details[open] summary::after{content:"−"}
+.faq summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.faq .a{padding:0 0 16px;color:var(--muted);font-size:14px;line-height:1.85}
+.faq .a strong{color:var(--ink)}
+
+/* ---------- verdict ---------- */
+.verdict{border-width:3px;overflow:hidden}
+.verdict.wait{border-color:var(--hold);background:var(--hold-soft)}
+.verdict.pay{border-color:var(--accent);background:var(--accent-soft)}
+.verdict.even{border-color:var(--line-strong);background:var(--surface-2)}
+.verdict.even .chip{background:var(--surface);color:var(--muted)}
+.verdict.even h3 b{color:var(--ink)}
+.verdict-bd{padding:32px 28px;display:flex;flex-direction:column;gap:16px}
+.chip{
+  align-self:flex-start;display:inline-flex;align-items:center;gap:9px;
+  padding:8px 20px;border-radius:999px;font-size:16px;font-weight:700;letter-spacing:.08em;
+}
+.verdict.wait .chip{background:var(--hold);color:var(--on-brand)}
+.verdict.pay .chip{background:var(--accent);color:var(--on-brand)}
+.dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.verdict h3{
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  margin:0;font-size:clamp(26px,4.6vw,40px);line-height:1.4;font-weight:700;text-wrap:balance;
+}
+.verdict h3 b{font-family:inherit;font-variant-numeric:tabular-nums;font-size:1.18em}
+.verdict.wait h3 b{color:var(--hold)}
+.verdict.pay h3 b{color:var(--accent)}
+.verdict p{margin:0;color:var(--muted);font-size:15px;max-width:62ch}
+
+/* ---------- explainer blocks ---------- */
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.blk{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:11px;
+  padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+}
+.blk.now{border-left:6px solid var(--hold);background:var(--hold-soft)}
+.blk.after{border-left:6px solid var(--accent);background:var(--accent-soft)}
+.blk h4{margin:0;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.calc{display:flex;flex-direction:column;gap:5px;font-variant-numeric:tabular-nums;font-size:14px}
+.calc div{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.calc div span:first-child{color:var(--muted);font-size:13px}
+.calc div span:last-child{font-weight:700}
+.calc .rule{display:block;height:2px;background:var(--line-strong);margin:8px 0}
+.calc .total{align-items:center;margin-top:2px}
+.calc .total span:first-child{font-size:14px;font-weight:700;color:var(--ink)}
+.calc .total span:last-child{font-size:40px;line-height:1.1;letter-spacing:-.01em}
+.blk.now .calc .total span:last-child{color:var(--hold)}
+.blk.after .calc .total span:last-child{color:var(--accent)}
+.blk .cap,.lead-note .cap{font-size:12px;color:var(--faint);line-height:1.6;margin:0}
+
+/* 金額が0の行は使われない。日付だけ入っていて効いていると誤解されるのを防ぐ */
+.rowfx{display:block;margin-top:8px;padding:9px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px;line-height:1.65;color:var(--ink)}
+.rowfx b{font-variant-numeric:tabular-nums}
+.rowfx.off{display:none}
+.rowtag{
+  margin-left:9px;font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:2px 9px;border-radius:999px;vertical-align:1px;white-space:nowrap;
+}
+.field.on > label > .rowtag{background:var(--accent);color:var(--on-brand)}
+.field.off > label > .rowtag{background:var(--surface-2);color:var(--faint);border:1px solid var(--line)}
+.field.off > label{color:var(--faint)}
+.field.off .hint{opacity:.5}
+.field.off .inputrow{border-style:dashed;background:var(--surface-2)}
+.field.off .inputrow input:not(.amt),
+.field.off .inputrow > .unit{opacity:.45}
+
+.disclaimer{
+  margin:4px 0 0;font-size:12px;line-height:1.7;color:var(--muted);
+  padding-top:12px;border-top:1px solid var(--line-strong);
+}
+
+/* ---------- group (2つの入口を太枠で分ける) ---------- */
+.group{border:3px solid;border-radius:18px;overflow:hidden;background:var(--surface-2)}
+.group-hd{padding:15px 22px;display:flex;flex-direction:column;gap:3px;color:var(--on-brand)}
+.group-hd .t{
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-size:clamp(17px,3.4vw,20px);font-weight:700;letter-spacing:.02em;
+}
+.group-hd .d{font-size:13px;line-height:1.7;opacity:.92}
+.group-bd{padding:20px;display:flex;flex-direction:column;gap:22px}
+.group.a{border-color:var(--accent)}
+.group.a .group-hd{background:var(--accent)}
+.group.b{border-color:var(--calc)}
+.group.b .group-hd{background:var(--calc)}
+.group.b .goal{background:var(--calc-soft);border-left-color:var(--calc)}
+.group.b .goal-big{color:var(--calc)}
+.group.b .tryBtn{border-color:var(--calc);background:var(--calc-soft);color:var(--calc)}
+.group.b .tryBtn:hover{background:var(--calc);color:var(--on-brand)}
+.group.b .inputrow:focus-within{border-color:var(--calc);box-shadow:0 0 0 3px var(--calc-soft)}
+@media (max-width:560px){ .group-bd{padding:14px;gap:18px} }
+
+/* ---------- goal (期間から逆算) ---------- */
+.goal{
+  margin-top:18px;padding:18px 20px;border-radius:11px;
+  background:var(--accent-soft);border-left:6px solid var(--accent);
+  display:flex;flex-direction:column;gap:12px;
+}
+.goal-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.goal-line .lbl{font-size:14px;font-weight:700;color:var(--ink)}
+.goal-big{
+  font-size:clamp(30px,7vw,40px);line-height:1.1;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.goal .cap{margin:0;font-size:13px;color:var(--muted);line-height:1.75}
+.goal .cap b{color:var(--ink)}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:460px}
+th,td{padding:14px 14px;text-align:right;border-bottom:1px solid var(--line);font-size:16px;white-space:nowrap}
+td b{font-size:19px}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{
+  font-size:12px;letter-spacing:.05em;color:var(--muted);font-weight:700;
+  border-bottom:1px solid var(--line-strong);
+}
+tbody tr:last-child td{border-bottom:0}
+tr.best td{background:var(--accent-soft);border-top:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+tr.best td:first-child{font-weight:700}
+tr.best td b{color:var(--accent-ink)}
+td b{font-weight:700}
+.win{color:var(--accent);font-weight:700}
+
+.warn{
+  margin:16px 0 0;padding:13px 16px;border-radius:10px;
+  background:var(--hold-soft);border:1px solid var(--hold);
+  color:var(--hold);font-size:13.5px;font-weight:500;line-height:1.7;
+}
+.warn b{font-weight:700}
+
+.bridge{
+  margin:18px 0 0;padding:14px 16px;border-radius:10px;
+  background:var(--surface-2);border-left:5px solid var(--accent);
+  color:var(--ink);font-size:14.5px;line-height:1.85;
+}
+.bridge b{color:var(--accent-ink)}
+.lead-note{
+  margin:0 0 18px;padding:12px 15px;border-radius:9px;background:var(--surface-2);
+  color:var(--muted);font-size:13.5px;line-height:1.8;
+}
+.lead-note b{color:var(--ink)}
+.tryBtn{
+  align-self:flex-start;margin-top:4px;padding:9px 18px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-ink);
+  font:inherit;font-size:13.5px;font-weight:700;
+}
+.tryBtn:hover{background:var(--accent);color:var(--on-brand)}
+.tryBtn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.legend-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.legend-note > summary{
+  cursor:pointer;list-style:none;font-size:13.5px;font-weight:700;color:var(--accent-ink);padding:2px 0;
+}
+.legend-note > summary::-webkit-details-marker{display:none}
+.legend-note > summary::before{content:"＋ ";font-weight:700}
+.legend-note[open] > summary::before{content:"− "}
+.legend-note > summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.legend-note[open] .formula{margin-top:14px}
+.legend-note .formula{
+  margin:0 0 14px;padding:12px 15px;border-radius:9px;background:var(--accent-soft);
+  color:var(--accent-ink);font-size:14px;line-height:1.8;
+}
+.legend-note .formula span{color:var(--muted);font-size:13px}
+.legend-note dl{margin:0;display:flex;flex-direction:column;gap:11px}
+.legend-note dt{font-size:13px;font-weight:700;color:var(--ink)}
+.legend-note dd{margin:3px 0 0;font-size:13px;color:var(--muted);line-height:1.8}
+td .sub{font-size:11.5px;color:var(--faint);font-weight:400}
+
+/* ---------- chart ---------- */
+.chartbox{position:relative;padding:8px 4px 0}
+canvas{width:100%;height:280px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:16px;padding:14px 4px 2px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:7px;vertical-align:middle}
+
+/* ---------- milestones ---------- */
+.miles{display:flex;flex-direction:column;gap:0}
+.mile{
+  display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:14px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums;
+}
+.mile:last-child{border-bottom:0}
+.mile .lbl{color:var(--muted);font-size:15px}
+.mile .val{font-weight:700;font-size:19px}
+.mile.fin .val{font-size:24px}
+.mile.fin .lbl,.mile.fin .val{color:var(--accent);font-weight:700}
+
+/* ---------- switch line ---------- */
+.switch{
+  background:var(--hold-soft);border:1px solid var(--hold);border-radius:12px;
+  padding:20px 22px;display:flex;flex-direction:column;gap:8px;
+}
+.switch h3{
+  margin:0;font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-size:17px;font-weight:600;color:var(--hold);
+}
+.switch .big{font-size:56px;font-weight:700;color:var(--hold);font-variant-numeric:tabular-nums;line-height:1.15;letter-spacing:-.01em}
+.switch p{margin:0;font-size:13.5px;color:var(--muted);max-width:60ch}
+
+/* ---------- footer ---------- */
+footer{font-size:12.5px;color:var(--faint);line-height:1.8;border-top:1px solid var(--line);padding-top:22px}
+footer p{margin:0 0 8px}
+footer strong{color:var(--muted)}
+
+@media (max-width:560px){
+  /* 狭い画面では「入力＋単位」を1組ずつ1行に */
+  .field.wide .inputrow input,.field.wide .inputrow input.amt{flex:1 1 58%;min-width:0}
+  .field.wide .inputrow > .unit{flex:1 1 auto;justify-content:flex-start}
+  .wrap{padding:28px 16px 60px;gap:28px}
+  .card-bd{padding:18px}
+  .verdict-bd{padding:20px 18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">住宅ローン控除を計算に入れた繰り上げ返済シミュレーター</div>
+  <h1>返すか、待つか</h1>
+  <p class="lede">住宅ローン控除を受けている間は、繰り上げ返済をしても「戻ってくるお金」が同じだけ減ります。今すぐ返すのと、控除が終わってから返すのと、どちらが得か。あなたの数字で判定します。</p>
+</header>
+
+<section class="card">
+  <div class="card-hd"><h2>あなたの数字</h2><span class="note">通帳・返済予定表・源泉徴収票から</span></div>
+  <div class="card-bd">
+    <div class="grid">
+      <div class="field">
+        <label for="bal">今のローン残高</label>
+        <div class="inputrow"><input id="bal" type="number" step="1" value="21663439"><span class="unit">円</span></div>
+      </div>
+      <div class="field">
+        <label for="rate">今の金利（年）</label>
+        <div class="inputrow"><input id="rate" type="number" step="0.01" value="1.10"><span class="unit">％</span></div>
+      </div>
+      <div class="field">
+        <label for="pay">毎月の返済額</label>
+        <div class="inputrow"><input id="pay" type="number" step="1" value="69534"><span class="unit">円</span></div>
+      </div>
+      <div class="field">
+        <label for="ded">住宅ローン控除の割合</label>
+        <div class="inputrow"><select id="ded">
+          <option value="1.0" selected>1.0％（2021年までに入居）</option>
+          <option value="0.7">0.7％（2022年以降に入居）</option>
+          <option value="0">受けていない</option>
+        </select></div>
+        <span class="hint">年末に残っているローンの、この割合が戻ってきます</span>
+      </div>
+      <div class="field">
+        <label for="dedend">住宅ローン控除が受けられる最後の年</label>
+        <div class="inputrow"><input id="dedend" type="number" step="1" value="2027"><span class="unit">年分</span></div>
+        <span class="hint">入居した年から10年目、または13年目</span>
+      </div>
+    </div>
+
+    <details class="adv">
+      <summary>詳しく設定する（控除の上限・金利が上がったら）</summary>
+      <div class="grid">
+
+        <div class="subhead">もし金利が上がったら</div>
+        <div class="field wide">
+          <label for="rate2After">「もし、こうなったら」を試す</label>
+          <div class="inputrow">
+            <input id="rate2After" type="number" step="1" value="0"><span class="unit">年後に</span>
+            <input id="rate2" type="number" step="0.01" value="1.60"><span class="unit">％ になったら</span>
+          </div>
+          <span class="hint"><b>予測ではありません。</b>0年後のままなら今の金利が続く前提。試すなら＋0.5％から</span>
+        </div>
+
+        <div class="subhead">住宅ローン控除と預金</div>
+        <div class="field wide">
+          <label for="dedCap">住宅ローン控除で1年に戻ってくる額の上限</label>
+          <div class="inputrow"><input id="dedCap" class="amt" type="number" step="1000" value="0"><span class="unit">円</span></div>
+          <span class="hint"><b>ほとんどの方は0のままでOK</b>（→ よくある質問「控除は満額もらえていますか」）</span>
+        </div>
+        <div class="field">
+          <label for="dep">貯めておく口座の金利（分かれば）</label>
+          <div class="inputrow"><input id="dep" type="number" step="0.01" value="0"><span class="unit">％</span></div>
+          <span class="hint"><b>0のままでOK。</b>預金の金利は将来変わるので、<b>入れないほうが安全</b>です。今の金利で試したいときだけ入れてください（税引前）</span>
+        </div>
+        <div class="field">
+          <label for="sy">今は何年何月</label>
+          <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
+        </div>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+<div class="group a">
+  <div class="group-hd">
+    <span class="t">A｜繰り上げ返済したい場合はこちら</span>
+    <span class="d">毎月いくら返せるかが決まっている人へ。いま返すのと、住宅ローン控除が終わってから返すのと、どちらが得かを判定します。</span>
+  </div>
+  <div class="group-bd">
+
+<section class="card">
+  <div class="card-hd"><h2>繰り上げ返済の計画</h2><span class="note">3つを組み合わせられます</span></div>
+  <div class="card-bd">
+    <p class="lead-note"><b>①②③は足し算されて、1つの計画になります。</b>別々に比べたいときは、1つだけ入れて計算してください。<b>金額が0の行は使いません。</b>日付が入っていても効きません。試しの数字で構いません。</p>
+    <div class="grid">
+
+      <div class="field wide">
+        <label for="monthly">① 毎月ずつ入れる<span class="rowtag" id="tagMon"></span></label>
+        <div class="inputrow">
+          <input id="monStartY" type="number" step="1" value="2026"><span class="unit">年</span>
+          <input id="monStartM" type="number" step="1" min="1" max="12" value="9"><span class="unit">月から 毎月</span>
+          <input id="monthly" class="amt" type="number" step="1000" value="0"><span class="unit">円ずつ</span>
+        </div>
+        <span class="hint"><b>返し始める月ではありません。</b>お金を用意できるようになる月を入れてください。実際にいつ返すかは、下の判定で決めます</span>
+        <span class="rowfx off" id="fxMon"></span>
+      </div>
+
+      <div class="field wide">
+        <label for="yearly">② 毎年1回ずつ入れる（ボーナスなど）<span class="rowtag" id="tagYear"></span></label>
+        <div class="inputrow">
+          <input id="yearStartY" type="number" step="1" value="2026"><span class="unit">年から 毎年</span>
+          <input id="yearMonth" type="number" step="1" min="1" max="12" value="12"><span class="unit">月に</span>
+          <input id="yearly" class="amt" type="number" step="10000" value="0"><span class="unit">円ずつ</span>
+        </div>
+        <span class="hint">「毎年12月のボーナスから50万円ずつ」のような使い方。<br><b>住宅ローン控除を受けている間に入れた分は、すぐ返さずに貯めておいて、控除が終わった月にまとめて返すやり方も一緒に計算します。</b></span>
+        <span class="rowfx off" id="fxYear"></span>
+      </div>
+
+      <div class="field wide">
+        <label for="lump">③ 1回だけ、まとまった額を入れる<span class="rowtag" id="tagLump"></span></label>
+        <div class="inputrow">
+          <input id="lumpY" type="number" step="1" value="2028"><span class="unit">年</span>
+          <input id="lumpM" type="number" step="1" min="1" max="12" value="1"><span class="unit">月に</span>
+          <input id="lump" class="amt" type="number" step="10000" value="0"><span class="unit">円</span>
+        </div>
+        <span class="hint">貯金から一度に入れる分。0なら使いません</span>
+        <span class="rowfx off" id="fxLump"></span>
+      </div>
+
+    </div>
+
+    <details class="adv">
+      <summary>繰り上げ返済のしかたを設定する（タイプ・手数料）</summary>
+      <div class="grid">
+        <div class="field">
+          <label for="kind">繰り上げ返済のタイプ</label>
+          <div class="inputrow"><select id="kind">
+            <option value="term" selected>期間短縮型（返す期間が縮む）</option>
+            <option value="amount">返済額軽減型（毎月の額が減る）</option>
+          </select></div>
+          <span class="hint">利息を減らすなら期間短縮型。毎月を軽くするなら軽減型（→ よくある質問）</span>
+        </div>
+        <div class="field">
+          <label for="fee">1回あたりの手数料</label>
+          <div class="inputrow"><input id="fee" type="number" step="100" value="0"><span class="unit">円</span></div>
+          <span class="hint">ネット手続きなら無料の銀行が多い</span>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="card verdict" id="verdict">
+  <div class="verdict-bd">
+    <span class="chip"><span class="dot"></span><span id="chipTxt">判定</span></span>
+    <h3 id="vHead"></h3>
+    <p id="vSub"></p>
+    <button type="button" id="tryBtn" class="tryBtn" hidden>例：毎月1万円で試してみる</button>
+    <button type="button" id="earlyBtn" class="tryBtn" hidden></button>
+    <p class="disclaimer">入力した条件での概算です。住宅ローン契約や税務上の適用を保証するものではありません。実際に動く前に、金融機関・税務署・専門家にご確認ください。</p>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-hd"><h2 id="whyHead">なぜ、いま返しても得しないのか</h2><span class="note" id="unitNote"></span></div>
+  <div class="card-bd">
+    <p class="lead-note" id="unitLead"></p>
+    <div class="blocks">
+      <div class="blk now">
+        <h4 id="h1t"></h4>
+        <div class="calc">
+          <div><span>払わずに済む利息（年）</span><span id="e1">+11,000円</span></div>
+          <div><span>戻ってこなくなるお金（年）</span><span id="e2">−10,000円</span></div>
+          <span class="rule"></span>
+          <div class="total"><span>得するのは</span><span id="e3">1,000円</span></div>
+        </div>
+        <p class="cap">住宅ローン控除を受けている間は、利息が減っても、戻ってくるお金が同じだけ減ります。</p>
+      </div>
+      <div class="blk after">
+        <h4 id="h2t"></h4>
+        <div class="calc">
+          <div><span>払わずに済む利息（年）</span><span id="e4">+11,000円</span></div>
+          <div><span>戻ってこなくなるお金（年）</span><span id="e5">0円</span></div>
+          <span class="rule"></span>
+          <div class="total"><span>得するのは</span><span id="e6">11,000円</span></div>
+        </div>
+        <p class="cap" id="e7"></p>
+      </div>
+    </div>
+    <p id="bridge" class="bridge"></p>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-hd"><h2 id="cmpHead">3つのやり方を比べる</h2><span class="note">完済までの合計</span></div>
+  <div class="card-bd">
+    <p class="lead-note" id="cmpLead"></p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>やり方</th><th>いつ終わるか</th><th>銀行に払う利息</th><th>住宅ローン控除で<br>戻るお金</th><th>手数料</th><th>本当に払う利息</th></tr></thead>
+        <tbody id="cmp"></tbody>
+      </table>
+    </div>
+    <details class="legend-note">
+      <summary>表の読み方</summary>
+      <p class="formula"><b>本当に払う利息</b> ＝ 銀行に払う利息 − 住宅ローン控除で戻るお金 − 貯めている間の預金利息 ＋ 手数料<br>
+      <span>戻ってくるお金を引いたあとに、<b>結局あなたの財布から出ていく利息</b>です。この数字がいちばん小さいやり方が、いちばん得。</span></p>
+      <dl>
+        <dt>銀行に払う利息</dt>
+        <dd>借りたお金の使用料として、完済までに銀行へ払う総額です。借りたお金そのもの（元金）は入っていません。</dd>
+        <dt>住宅ローン控除で戻るお金</dt>
+        <dd>税金から戻ってくる総額です。年末に残っているローンをもとに計算されるので、早く返すほど少なくなります。</dd>
+        <dt>貯めている間の預金利息</dt>
+        <dd>「控除が終わってから返す」やり方で、返さずに手元に置いている間についた利息です（税引後）。<b>表には列がありませんが、いちばん右の「本当に払う利息」からは差し引いています。</b>「詳しく設定する」の預金金利が0のままなら0円です。</dd>
+        <dt>「繰り上げ返済をしない」の終わる時期</dt>
+        <dd><b>今の返済額のまま、ずっと払い続けた場合</b>の計算です。金利が上がっていると、契約の完済予定日より<b>後ろにずれます</b>。実際には5年ごとの見直しで返済額が引き上げられ、契約どおりの日に終わるように調整されます。ここに出ているのは「返済額が今のまま変わらなかったら」という仮定の数字です。</dd>
+      </dl>
+    </details>
+    <p id="negNote" class="bridge" hidden></p>
+    <p id="termWarn" class="warn" hidden></p>
+    <p id="cmpNote" class="bridge" hidden></p>
+    <p id="feeNote" class="warn" hidden></p>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-hd"><h2>ローンの減り方</h2><span class="note">横軸は年</span></div>
+  <div class="card-bd chartbox">
+    <canvas id="chart" aria-label="ローン残高の推移グラフ"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--line-strong)"></i>繰り上げ返済をしない</span>
+      <span><i style="background:var(--hold)"></i>すぐ返し始める</span>
+      <span><i style="background:var(--accent)"></i>控除が終わってから返す</span>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-hd"><h2>いつ、いくらまで減るか</h2><span class="note">おすすめのやり方で進んだ場合</span></div>
+  <div class="card-bd"><div class="miles" id="miles"></div></div>
+</section>
+
+<section class="switch">
+  <h3>あなたの場合、金利がここを超えたら、待たずに返す</h3>
+  <div class="big" id="flip">1.33％</div>
+  <p id="flipTxt"></p>
+</section>
+
+  </div>
+</div>
+
+<div class="group b">
+  <div class="group-hd">
+    <span class="t">B｜いつまでに完済したいか決まっている場合はこちら</span>
+    <span class="d">「10年で返したい」から逆算します。毎月いくら用意すればいいかが出ます。出た金額は、上のAにそのまま入れられます。</span>
+  </div>
+  <div class="group-bd">
+
+<section class="card">
+  <div class="card-hd"><h2>いつまでに返したいか</h2><span class="note">期間から逆算します</span></div>
+  <div class="card-bd">
+    <p class="lead-note"><b>いくら入れればいいか分からないときは、こちらから。</b>完済したい時期を入れると、毎月いくら用意すればいいかが出ます。</p>
+    <div class="grid">
+      <div class="field">
+        <label for="goalY">完済したい時期</label>
+        <div class="inputrow">
+          <input id="goalY" type="number" step="1" value="2036"><span class="unit">年</span>
+          <input id="goalM" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span>
+        </div>
+        <span class="hint">今から10年なら、10年後の同じ月を入れてください</span>
+      </div>
+    </div>
+    <div class="goal">
+      <div class="goal-line"><span class="lbl">今の返済に上乗せする額（毎月）</span><span id="goalAdd" class="goal-big">―</span></div>
+      <p id="goalSub" class="cap"></p>
+      <button type="button" id="goalBtn" class="tryBtn" hidden>この金額を「① 毎月ずつ入れる」に入れる</button>
+    </div>
+  </div>
+</section>
+
+  </div>
+</div>
+
+<section class="card">
+  <div class="card-hd"><h2>よくある質問</h2><span class="note">計算に入れていないことも書いています</span></div>
+  <div class="card-bd">
+    <div class="faq">
+
+      <details>
+        <summary>期間短縮型と返済額軽減型、どちらがいいですか</summary>
+        <div class="a"><strong>利息を減らしたいなら期間短縮型、毎月の負担を軽くしたいなら返済額軽減型です。</strong>同じ金額を入れても、期間短縮型のほうが利息の削減は大きくなります。ただし毎月払う額は変わらないので、家計は楽になりません。「詳しく設定する」で切り替えて、両方の数字を見比べてください。</div>
+      </details>
+
+      <details>
+        <summary>5年ルール・125％ルールは計算に入っていますか</summary>
+        <div class="a">部分的に入っています。このページは<strong>毎月の返済額を変えずに</strong>計算しているので、金利が上がったときに「利息が増えて、ローンの減りが遅くなる」という5年ルールの中身はそのまま出ます。<br><br>
+        ただし、<strong>5年ごとの返済額の見直しは入れていません。</strong>見直しの月が来ると、実際には毎月の返済額が上がります。<br><br>
+        <strong>ご自分の見直し時期の数えかた</strong><br>
+        銀行によりますが、「借入後5回目の10月1日を基準日として再計算し、12月の返済日の翌日から適用」という形が多いです。この場合、2024年3月に借りた人なら 2024年10月が1回目 →（中略）→ <strong>2028年10月が5回目</strong>。新しい返済額は<strong>2029年1月の返済分から</strong>になります。<br><br>
+        <strong>125％ルール</strong>は、新しい返済額が前の125％を超えないという上限です。ただし<strong>抑えられた分は消えず、後ろに繰り延べられます</strong>。「上限があるから安心」ではなく「先送りされている」と考えてください。<br><br>
+        <strong>※ 返済額軽減型で繰り上げ返済した場合は、5年ルール・125％ルールが適用されない</strong>と定めている銀行があります。契約書の「金利変動リスクに関する説明」を確認してください。</div>
+      </details>
+
+      <details>
+        <summary>繰り上げ返済すると住宅ローン控除が使えなくなることがある、と聞きました</summary>
+        <div class="a"><strong>あります。期間短縮型で返すときの注意点です。</strong>住宅ローン控除は「返済期間が10年以上あること」が条件になっています。<br><br>
+        <strong>期間短縮型</strong>で繰り上げ返済すると、返す期間そのものが縮みます。これを続けて返済期間が10年を切ると、<strong>その年から控除が受けられなくなります。</strong>控除で戻る額より、失う額のほうが大きくなることがあります。<br><br>
+        <strong>返済額軽減型</strong>なら返済期間は変わらないので、この問題は起きません。「繰り上げ返済のしかたを設定する」で切り替えられます。<br><br>
+        控除を受けている間に期間を大きく縮める予定があるなら、<strong>実行する前に銀行か税務署に確認してください。</strong>このページはこの判定をしていません。</div>
+      </details>
+
+      <details>
+        <summary>完済すると団信（団体信用生命保険）はどうなりますか</summary>
+        <div class="a"><strong>終わります。</strong>ローンが残っている間は、契約者が亡くなったときに残りのローンがゼロになる保険がついています。繰り上げ返済で早く完済するということは、<strong>その保険を早く手放すということ</strong>でもあります。<br>このページは、その分の価値を金額にしていません。生命保険をどうするかは別に考えてください。</div>
+      </details>
+
+      <details>
+        <summary>手元にいくら残しておけばいいですか</summary>
+        <div class="a">このページは答えを出しません。ただ1つだけ言えるのは、<strong>繰り上げ返済したお金は、原則もう引き出せない</strong>ということです。<br>病気・修理・失業。お金が要る場面は前触れなく来ます。<strong>生活費の何ヶ月分を手元に残すかを先に決めてから</strong>、残った分で繰り上げ返済してください。</div>
+      </details>
+
+      <details>
+        <summary>繰り上げ返済に手数料はかかりますか</summary>
+        <div class="a"><strong>銀行によります。</strong>ネットからの手続きなら無料のところが増えていますが、窓口や電話だと1回数千円〜数万円かかることがあります。<br>手数料がかかる場合、<strong>毎月少しずつ返すより、年に1回まとめたほうが得です。</strong>「詳しく設定する」で1回あたりの手数料を入れると、合計がいくらになるか出ます。</div>
+      </details>
+
+      <details>
+        <summary>控除は満額もらえていますか（源泉徴収票の見かた）</summary>
+        <div class="a">このページは初期状態で「年末残高 × 割合」を満額もらえる前提で計算しています。<strong>実際には、納めている所得税・住民税の範囲内でしか戻りません。</strong><br><br>
+        源泉徴収票には、よく似た2つの欄があります。<strong>見るのは「可能額」のほうです。</strong><br>
+        ・<strong>住宅借入金等特別控除可能額</strong> … 本来もらえる額。<strong>これを見てください</strong><br>
+        ・住宅借入金等特別控除の額 … 所得税から引かれた分<strong>だけ</strong>。住民税から戻っている分が入っていません<br><br>
+        たとえば「可能額 220,400円 ／ 控除の額 118,400円」と書かれていたら、差額の102,000円は住民税から戻っています。合計220,400円もらえているので、<strong>入れる数字は220,400です。</strong><br><br>
+        <strong>自分に関係あるか、10秒で分かる引き算</strong><br>
+        「可能額」から「控除の額」を引いてください。その差が住民税から戻っている分です。<br>
+        ・差が <strong>136,500円以下</strong>（2022年以降に入居した方は<strong>97,500円以下</strong>）→ <strong>満額もらえています。0のままでOK</strong><br>
+        ・差がそれを超えている → 超えた分はもらえていません。「可能額 −（超えた分）」を入れてください<br><br>
+        さきほどの例なら、差は102,000円。136,500円以下なので満額です。<br><br>
+        なぜこの金額かというと、住民税から戻せる分に上限があるからです（2021年までに入居＝課税総所得の7％・最大136,500円／2022年以降＝5％・最大97,500円）。正確に知りたい方は住民税決定通知書を見るか、市区町村に確認してください。</div>
+      </details>
+
+      <details>
+        <summary>変動金利が上がったらどうなりますか</summary>
+        <div class="a">「詳しく設定する」の<strong>「何年後に何％になるか」</strong>を入れると試せます。<br>読み取ってほしいのは、<strong>金利が上がるほど繰り上げ返済の価値が上がる</strong>ということです。同時に、待つか返すかの分かれ目になる金利も動きます。金利の見直しは年2回（多くは4月と10月）です。通知が来たら、ここに新しい金利を入れて計算し直してください。</div>
+      </details>
+
+      <details>
+        <summary>繰り上げ返済より、投資に回したほうが得では？</summary>
+        <div class="a"><strong>このページは投資を扱いません。</strong>増えるか減るか分からないものを計算に入れると、答えが「前提しだい」になってしまうからです。<br>ここで比べているのは、<strong>確実に決まっているものだけ</strong>です。払う利息、戻ってくる控除、預金の金利。この3つに「かもしれない」は入っていません。<br>投資と比べたい方は、このページの数字を出発点にして、ご自身で判断してください。</div>
+      </details>
+
+      <details>
+        <summary>途中で繰り上げ返済の額を増やす予定です</summary>
+        <div class="a">このページは<strong>「今月から完済まで、毎月ずっと同じ額」</strong>という前提で計算しています。<br><br>
+        途中で増やす予定なら、<strong>ならした平均の額を入れてください。</strong>たとえば「最初の2年は3万円、そのあと8万円」なら、5万円くらいで入れるとおおよその形が見えます。<br><br>
+        きちんと出したいときは、<strong>期間を区切って2回計算する</strong>のが確実です。1回目の期間が終わったときの残高を控えておいて、それを「今のローン残高」に入れて計算し直してください。</div>
+      </details>
+
+      <details>
+        <summary>ペアローンや、夫婦それぞれのローンにも使えますか</summary>
+        <div class="a">1本ずつなら使えます。<strong>2本あるなら、2回に分けて計算してください。</strong>控除の割合や終わる年が人によって違うことがあるので、まとめて計算すると答えがずれます。</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>この計算について</strong></p>
+  <p>入力した数字はこのページの中だけで計算しています。どこにも送信していませんし、保存もしていません。</p>
+  <p>控除は「年末に残っているローン × 割合」で計算しています。実際には、納めている税金の額が少ないと全額は戻りません。源泉徴収票の「住宅借入金等特別控除の額」が、年末残高 × 割合よりも少ない場合は、割合を下げて計算してください。</p>
+  <p>変動金利の場合、金利が変わっても5年間は毎月の返済額が変わらないことがあります（5年ルール）。このページは今の金利がそのまま続く前提で計算しています。</p>
+  <p>作った人は税理士でもファイナンシャルプランナーでもありません。実際に動く前に、金融機関や税務署、専門家に確認してください。</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var TAX = 0.20315;
+  var ids = ["bal","rate","pay","ded","dedend","dep","sy","sm",
+             "kind","fee","dedCap","rate2After","rate2",
+             "monthly","monStartY","monStartM","yearly","yearMonth","yearStartY","lump","lumpY","lumpM",
+             "goalY","goalM"];
+  var el = {};
+  ids.forEach(function(k){ el[k] = document.getElementById(k); });
+
+  function num(x){ var v = parseFloat(x); return isFinite(v) ? v : 0; }
+  function yen(v){ return Math.round(v).toLocaleString("ja-JP") + "円"; }
+  function signed(v){ return (v >= 0 ? "+" : "−") + Math.round(Math.abs(v)).toLocaleString("ja-JP") + "円"; }
+
+  function ymTxt(sy, sm, m){ var d = ym(sy, sm, m); return d.y + "年" + d.m + "月"; }
+
+  function ym(sy, sm, m){
+    var t = sy * 12 + (sm - 1) + m;
+    return { y: Math.floor(t / 12), m: (t % 12) + 1 };
+  }
+
+  // 毎月の返済額（元利均等）
+  function pmt(P, annual, n){
+    var r = annual / 12;
+    if (n <= 0) return P;
+    if (r === 0) return P / n;
+    return P * r / (1 - Math.pow(1 + r, -n));
+  }
+  // 今の残高・金利・返済額から、残りの回数を出す
+  function termMonths(P, annual, pay){
+    var r = annual / 12;
+    if (r === 0) return Math.ceil(P / pay);
+    if (pay <= P * r) return 720;
+    return Math.ceil(-Math.log(1 - P * r / pay) / Math.log(1 + r));
+  }
+
+  function simulate(o){
+    var b = o.bal, m = 0, ti = 0, ded = 0, fees = 0;
+    var pool = 0, poolInt = 0, dr = o.dep / 12;
+    var dump = 0, dumpAt = null, dumpTotal = 0, dumpSame = 0;  // 控除終了後にまとめて入れる額と、その月
+    // dump は「貯めていた分」。dumpTotal は「その月に実際に銀行へ入れる合計」。
+    // ③の一括が同じ月に重なると 2 つは一致しないので、画面には dumpTotal を出す。
+    // 「◯円貯まった」がどこから来た数字か画面に出すための内訳
+    var pm = 0, pmN = 0, py = 0, pyN = 0, pl = 0, dumpParts = null;
+    var series = [b], marks = [], mi = 0;
+    var markVals = [], step = 5000000;
+    for (var v = Math.floor(o.bal / step) * step; v > 0; v -= step) markVals.push(v);
+    // 返済額軽減型は、元の完済月を固定したまま毎月の額を下げていく
+    var n0 = termMonths(o.bal, o.rate, o.pay);
+    var pay = o.pay, prevRate = o.rate;
+    var base = o.sy * 12 + (o.sm - 1);
+    var lumpAt = (o.lump > 0) ? (o.lumpY * 12 + (o.lumpM - 1)) - base : -1;
+    var monFrom = (o.monthly > 0) ? (o.monStartY * 12 + (o.monStartM - 1)) - base : Infinity;
+    // その月に上乗せする額
+    function extraAt(mm, d){
+      var x = 0;
+      if (o.monthly > 0 && mm >= monFrom) x += o.monthly;
+      if (o.yearly > 0 && d.m === o.yearMonth && d.y >= o.yearStartY) x += o.yearly;
+      if (lumpAt === mm) x += o.lump;
+      return x;
+    }
+
+    while (b > 0 && m < 720){
+      m++;
+      var d = ym(o.sy, o.sm, m);
+      // 金利が上がる想定
+      var rateNow = (o.rate2After > 0 && m > o.rate2After * 12) ? o.rate2 : o.rate;
+      if (rateNow !== prevRate && o.kind === "amount"){
+        pay = pmt(b, rateNow, n0 - m + 1);
+      }
+      prevRate = rateNow;
+      var r = rateNow / 12;
+      var i = b * r; ti += i;
+
+      var e = (o.mode === "none") ? 0 : extraAt(m, d);
+
+      if (o.mode === "wait" && o.dedRate > 0 && d.y <= o.dedEnd){
+        poolInt += (pool + e) * dr;
+        if (o.monthly > 0 && m >= monFrom){ pm += o.monthly; pmN++; }
+        if (o.yearly > 0 && d.m === o.yearMonth && d.y >= o.yearStartY){ py += o.yearly; pyN++; }
+        if (lumpAt === m) pl += o.lump;
+        pool += e; e = 0;
+      } else if (o.mode === "wait" && pool > 0){
+        dump = pool + poolInt; dumpAt = d;
+        dumpParts = { mon: pm, monN: pmN, year: py, yearN: pyN, lump: pl, gain: poolInt };
+        dumpSame = e; e += dump; pool = 0; poolInt = 0; dumpTotal = e;
+      }
+
+      if (e > 0) fees += o.fee;
+      var p = pay + e;
+      if (b + i < p) p = b + i;
+      b = b + i - p;
+      // 軽減型は繰り上げのたびに毎月の額を計算し直す
+      if (o.kind === "amount" && e > 0 && b > 0 && n0 - m > 0) pay = pmt(b, rateNow, n0 - m);
+      series.push(b);
+      if (d.m === 12 && d.y <= o.dedEnd && o.dedRate > 0){
+        var yearly = b * o.dedRate;
+        if (o.dedCap > 0) yearly = Math.min(yearly, o.dedCap);
+        ded += yearly;
+      }
+      while (mi < markVals.length && b <= markVals[mi]){
+        marks.push({ v: markVals[mi], y: d.y, m: d.m, mo: m }); mi++;
+      }
+    }
+    var end = ym(o.sy, o.sm, m);
+    return {
+      months: m, capped: (m >= 720 && b > 0), interest: ti, deduction: ded, poolGain: poolInt, fees: fees,
+      series: series, marks: marks, end: end, lastPay: pay,
+      dump: dump, dumpAt: dumpAt, dumpParts: dumpParts, dumpTotal: dumpTotal, dumpSame: dumpSame,
+      net: ti - ded - poolInt + fees
+    };
+  }
+
+  function dur(m){ return Math.floor(m / 12) + "年" + (m % 12) + "ヶ月"; }
+
+  // 「それまで貯めた◯円」の足し算を、そのまま画面に出す。
+  // 出どころの分からない金額が出ると読み手が止まるので、必ず内訳を添える。
+  function dumpBreakdown(r){
+    var d = r.dumpParts;
+    if (!d) return "";
+    var parts = [];
+    if (d.monN > 0) parts.push("毎月 " + yen(d.mon / d.monN) + " × " + d.monN + "ヶ月");
+    if (d.yearN > 0) parts.push("毎年 " + yen(d.year / d.yearN) + " × " + d.yearN + "回");
+    if (d.lump > 0) parts.push("一度に " + yen(d.lump));
+    if (Math.round(d.gain) > 0) parts.push("預金の利息 " + yen(d.gain));
+    // ③の一括が同じ月に重なっている分も足して見せる。合計と内訳が合わないと読み手が止まる。
+    if (Math.round(r.dumpSame) > 0) parts.push("この月に入れる分 " + yen(r.dumpSame));
+    if (!parts.length) return "";
+    return parts.join(" ＋ ") + " ＝ " + yen(r.dumpTotal || r.dump);
+  }
+
+  // 「待つ」と「すぐ返す」が入れ替わる金利を、総当たりの二分探索で求める。
+  // 早く返すと年末をまたぐ回数ぶん控除を失うので、単純な足し算では出ない。
+  function findFlip(o){
+    var lo = 0.0005, hi = 0.15;
+    for (var k = 0; k < 46; k++){
+      var mid = (lo + hi) / 2;
+      if (o.pay <= o.bal * mid / 12){ hi = mid; continue; }
+      var a = simulate(Object.assign({}, o, { rate: mid, mode: "now" }));
+      var b = simulate(Object.assign({}, o, { rate: mid, mode: "wait" }));
+      if (a.net - b.net > 0) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+
+  // 目標の完済月に間に合う「毎月の上乗せ額」を二分探索で求める。
+  // ②③に入っている分はそのまま計算に含めて、①だけを動かす。
+  function requiredMonthly(o, targetMonths, mode){
+    var lo = 0, hi = o.bal;
+    for (var k = 0; k < 44; k++){
+      var mid = (lo + hi) / 2;
+      var r = simulate(Object.assign({}, o, {
+        mode: mode, monthly: mid, monStartY: o.sy, monStartM: o.sm
+      }));
+      if (r.months > targetMonths) lo = mid; else hi = mid;
+    }
+    return hi;
+  }
+
+  var chart = document.getElementById("chart");
+
+  function draw(a, b, c, maxBal){
+    var dpr = window.devicePixelRatio || 1;
+    var w = chart.clientWidth, h = 280;
+    chart.width = w * dpr; chart.height = h * dpr;
+    var g = chart.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+
+    var cs = getComputedStyle(document.documentElement);
+    var cLine = cs.getPropertyValue("--line").trim();
+    var cLineS = cs.getPropertyValue("--line-strong").trim();
+    var cAcc = cs.getPropertyValue("--accent").trim();
+    var cHold = cs.getPropertyValue("--hold").trim();
+    var cFaint = cs.getPropertyValue("--faint").trim();
+
+    var padL = 8, padR = 10, padT = 12, padB = 26;
+    var W = w - padL - padR, H = h - padT - padB;
+    var maxM = Math.max(a.series.length, b.series.length, c.series.length);
+
+    // grid + x labels (every 5 years)
+    g.font = '11px "Zen Kaku Gothic New", system-ui, sans-serif';
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (var yr = 0; yr * 12 <= maxM; yr += 5){
+      var x = padL + (yr * 12 / maxM) * W;
+      g.strokeStyle = cLine; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(x, padT); g.lineTo(x, padT + H); g.stroke();
+      g.fillStyle = cFaint;
+      g.fillText(yr === 0 ? "今" : yr + "年", x, padT + H + 7);
+    }
+    g.strokeStyle = cLineS; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(padL, padT + H); g.lineTo(padL + W, padT + H); g.stroke();
+
+    function line(s, color, width, dash){
+      g.strokeStyle = color; g.lineWidth = width;
+      g.setLineDash(dash || []);
+      g.lineJoin = "round"; g.lineCap = "round";
+      g.beginPath();
+      for (var i = 0; i < s.length; i++){
+        var x = padL + (i / maxM) * W;
+        var y = padT + H - (Math.max(0, s[i]) / maxBal) * H;
+        if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.stroke();
+      g.setLineDash([]);
+    }
+    // "now" is drawn thicker underneath so that where the two plans overlap,
+    // the ochre reads as a halo around the green rather than vanishing.
+    line(c.series, cLineS, 1.5, [4, 4]);
+    line(a.series, cHold, 4);
+    line(b.series, cAcc, 1.8);
+
+    // endpoint dot on the recommended plan
+    var ex = padL + ((b.series.length - 1) / maxM) * W;
+    var ey = padT + H;
+    g.fillStyle = cAcc;
+    g.beginPath(); g.arc(ex, ey, 4.5, 0, Math.PI * 2); g.fill();
+  }
+
+  function render(){
+    var o = {
+      bal: num(el.bal.value),
+      rate: num(el.rate.value) / 100,
+      pay: num(el.pay.value),
+      monthly: Math.max(0, num(el.monthly.value)),
+      monStartY: Math.round(num(el.monStartY.value)),
+      monStartM: Math.min(12, Math.max(1, Math.round(num(el.monStartM.value)))),
+      yearly: Math.max(0, num(el.yearly.value)),
+      yearMonth: Math.min(12, Math.max(1, Math.round(num(el.yearMonth.value)))),
+      yearStartY: Math.round(num(el.yearStartY.value)),
+      dedRate: num(el.ded.value) / 100,
+      dedEnd: Math.round(num(el.dedend.value)),
+      dep: (num(el.dep.value) / 100) * (1 - TAX),
+      sy: Math.round(num(el.sy.value)),
+      sm: Math.min(12, Math.max(1, Math.round(num(el.sm.value)))),
+      kind: el.kind.value,
+      fee: Math.max(0, num(el.fee.value)),
+      lump: Math.max(0, num(el.lump.value)),
+      lumpY: Math.round(num(el.lumpY.value)),
+      lumpM: Math.min(12, Math.max(1, Math.round(num(el.lumpM.value)))),
+      rate2After: Math.max(0, num(el.rate2After.value)),
+      rate2: num(el.rate2.value) / 100,
+      dedCap: Math.max(0, num(el.dedCap.value))
+    };
+    if (o.bal <= 0 || o.pay <= 0 || o.rate < 0) return;
+    if (o.pay <= o.bal * o.rate / 12){
+      document.getElementById("verdict").className = "card verdict even";
+      document.getElementById("chipTxt").textContent = "数字を確認";
+      document.getElementById("vHead").textContent = "毎月の返済額が、利息より少なくなっています。数字を確認してください。";
+      document.getElementById("vSub").textContent = "この条件だと、ローンが減りません。返済額か金利を見直してください。";
+      return;
+    }
+
+    var now = simulate(Object.assign({}, o, { mode: "now" }));
+    var wait = simulate(Object.assign({}, o, { mode: "wait" }));
+    var none = simulate(Object.assign({}, o, { mode: "none" }));
+
+    var diff = now.net - wait.net;           // >0 なら待つほうが得
+    var hasDed = o.dedRate > 0 && o.dedEnd >= o.sy;
+    var hasDedRaw = hasDed;
+    var hasExtra = o.monthly > 0 || o.yearly > 0 || o.lump > 0;
+    // 「あなたの計画」がいつ始まるか
+    var planStart = [];
+    if (o.monthly > 0) planStart.push(o.monStartY * 12 + (o.monStartM - 1));
+    if (o.yearly > 0) planStart.push(o.yearStartY * 12 + (o.yearMonth - 1));
+    if (o.lump > 0) planStart.push(o.lumpY * 12 + (o.lumpM - 1));
+    var ps = planStart.length ? Math.min.apply(null, planStart) : null;
+    var psY = ps === null ? null : Math.floor(ps / 12);
+    var psM = ps === null ? null : (ps % 12) + 1;
+    var startsNow = ps === null || ps <= o.sy * 12 + (o.sm - 1);
+    var waitBetter = diff > 0 && hasDed && hasExtra;
+    var EVEN = 5000;                          // これ未満の差は「ほぼ同じ」として扱う
+    var isEven = hasExtra && hasDed && Math.abs(diff) < EVEN;
+    // 計画の開始が控除の終わったあとなら、「あなたの計画」と「待つ」は同じもの。
+    // 同じ数字の行を2つ並べても意味がないので、1本にまとめて扱う。
+    var identical = hasExtra && hasDed
+      && now.months === wait.months && Math.abs(diff) < 1;
+    // 計画が控除の終了後から始まっていると、「待つ」が「計画どおり」と同じものになる。
+    // そのときに意味があるのは「積み立てを今月から始めたら」という比較なので、それを出す。
+    var earlier = identical
+      ? simulate(Object.assign({}, o, { mode: "wait",
+          monStartY: o.sy, monStartM: o.sm, yearStartY: o.sy }))
+      : null;
+    var earlierGain = earlier ? now.net - earlier.net : 0;
+    // 入力をずらした計画を黙って表に出すと、画面の数字が入力と合わなくなる。
+    // 提案はボタンにして、押されたときだけ入力そのものを書き換える。
+    var canStartEarlier = false;
+    var couldStartEarlier = identical && earlierGain > 0;
+    var alt = canStartEarlier ? earlier : wait;
+    var best = canStartEarlier ? earlier : (waitBetter ? wait : now);
+
+    // 金額が0の行は使われない。見た目でそれが分かるようにする。
+    function markRow(amountEl, tagId, on){
+      var f = amountEl.closest(".field");
+      if (!f) return;
+      f.classList.toggle("on", on);
+      f.classList.toggle("off", !on);
+      document.getElementById(tagId).textContent = on ? "使う" : "使っていません";
+    }
+    markRow(el.monthly, "tagMon",  o.monthly > 0);
+    markRow(el.yearly,  "tagYear", o.yearly  > 0);
+    markRow(el.lump,    "tagLump", o.lump    > 0);
+
+    // 期間から逆算：完済したい時期 → 毎月いくら上乗せするか
+    var gY = Math.round(num(el.goalY.value));
+    var gM = Math.min(12, Math.max(1, Math.round(num(el.goalM.value))));
+    var targetM = (gY * 12 + (gM - 1)) - (o.sy * 12 + (o.sm - 1));
+    var goalAdd = document.getElementById("goalAdd");
+    var goalSub = document.getElementById("goalSub");
+    var goalBtn = document.getElementById("goalBtn");
+    var others = [];
+    if (o.yearly > 0) others.push("毎年 " + Math.round(o.yearly).toLocaleString("ja-JP") + "円");
+    if (o.lump > 0) others.push("一度に " + Math.round(o.lump).toLocaleString("ja-JP") + "円");
+    var othersTxt = others.length
+      ? "②③に入れた " + others.join("・") + " も計算に入れた上での金額です。" : "";
+    if (targetM <= 0){
+      goalAdd.textContent = "―";
+      goalSub.textContent = "完済したい時期を、今より後にしてください。";
+      goalBtn.hidden = true;
+    } else if (!none.capped && none.months <= targetM){
+      goalAdd.textContent = "0円";
+      goalSub.innerHTML = "上乗せは要りません。今の返済額のままでも <b>" + none.end.y + "年"
+        + none.end.m + "月</b> に終わります。";
+      goalBtn.hidden = true;
+    } else {
+      var needRaw = requiredMonthly(o, targetM, "now");
+      var need = Math.ceil(needRaw / 100) * 100;      // 100円単位に切り上げ
+      if (need < 100){
+        goalAdd.textContent = "0円";
+        goalSub.innerHTML = "②③に入れた分だけで <b>" + gY + "年" + gM + "月</b> に間に合います。"
+          + "毎月の上乗せは要りません。";
+        goalBtn.hidden = true;
+      } else {
+        goalAdd.textContent = yen(need);
+        goalSub.innerHTML = "今月から毎月 <b>" + yen(need) + "</b> を繰り上げ返済に回すと、<b>"
+          + gY + "年" + gM + "月</b> に完済します。"
+          + "<br>毎月の返済 " + yen(o.pay) + " ＋ 上乗せ " + yen(need)
+          + " ＝ <b>毎月 " + yen(o.pay + need) + " を用意する</b>ことになります。"
+          + (othersTxt ? "<br>" + othersTxt : "")
+          + (hasDedRaw ? "<br>住宅ローン控除が終わるまで貯めておくやり方なら、これより少し少なくて足ります。" : "");
+        goalBtn.hidden = false;
+      }
+    }
+
+    // verdict
+    var vc = document.getElementById("verdict");
+    vc.className = "card verdict " + (isEven ? "even" : (waitBetter ? "wait" : "pay"));
+    var head = document.getElementById("vHead");
+    var sub = document.getElementById("vSub");
+    var tb = document.getElementById("tryBtn");
+    tb.hidden = hasExtra;
+    var eb = document.getElementById("earlyBtn");
+    eb.hidden = !couldStartEarlier;
+    if (couldStartEarlier){
+      eb.textContent = "② の開始を今月（" + o.sy + "年" + o.sm + "月）にして計算し直す";
+    }
+    if (now.capped){
+      // 60年計算しても返し終わらない。入力ミスの可能性が高い。
+      vc.className = "card verdict even";
+      document.getElementById("chipTxt").textContent = "終わりません";
+      head.innerHTML = "この条件だと、<b>60年たっても</b>返し終わりません。";
+      sub.textContent = "ローン残高・金利・毎月の返済額のどれかを確認してください。"
+        + "毎月の返済額が利息をわずかに上回っているだけだと、元金がほとんど減りません。";
+      tb.hidden = true;
+    } else if (!hasExtra){
+      document.getElementById("chipTxt").textContent = "計画を入れてください";
+      head.textContent = "「繰り上げ返済の計画」に金額を入れると、判定できます。";
+      sub.textContent = "まだ決まっていなくて構いません。試しの数字で「もしこうしたら」を見るための欄です。";
+    } else if (!hasDed){
+      document.getElementById("chipTxt").textContent = "すぐ返す";
+      head.innerHTML = "待つ理由はありません。<b>今月から</b>繰り上げ返済を始めてください。";
+      sub.textContent = "住宅ローン控除を受けていないので、繰り上げ返済した分がそのまま利息の削減になります。早く返すほど得です。";
+    } else if (identical){
+      document.getElementById("chipTxt").textContent = "控除の外です";
+      head.innerHTML = "あなたの計画は、すでに<b>住宅ローン控除が終わってから返す</b>やり方です。";
+      sub.textContent = "あなたの計画は" + psY + "年" + psM + "月から。それは住宅ローン控除が終わったあとなので、"
+        + "「いま返す」と「控除が終わるまで待つ」を比べる余地がありません。"
+        + (couldStartEarlier
+            ? " ただ、それまでの間にも貯められるなら、もっと効きます。"
+              + "② の開始を今月にすると、完済までに払う利息が " + yen(earlierGain) + " 少なくなります。"
+            : "");
+    } else if (waitBetter){
+      document.getElementById("chipTxt").textContent = isEven ? "わずかに 待つ" : "待つ";
+      head.innerHTML = isEven
+        ? "どちらでもほぼ同じですが、<b>待つ</b>ほうがわずかに有利です。"
+        : o.dedEnd + "年の住宅ローン控除が終わるまで待つと、<b>" + yen(diff) + "</b> 得します。";
+      sub.textContent = "住宅ローン控除が終わる" + (o.dedEnd + 1) + "年1月まで貯めておいて、そこから返し始めるやり方です。それまでに貯まったお金は、まとめて入れます。"
+        + "完済までの差は " + yen(diff) + "。"
+        + (isEven ? "毎月回せる金額が増えるほど、この差も大きくなります。" : "");
+    } else {
+      document.getElementById("chipTxt").textContent = isEven ? "わずかに すぐ返す" : "すぐ返す";
+      head.innerHTML = isEven
+        ? "どちらでもほぼ同じですが、<b>すぐ返す</b>ほうがわずかに有利です。"
+        : "いま繰り上げ返済を始めるほうが、<b>" + yen(Math.abs(diff)) + "</b> 得します。";
+      sub.textContent = "金利が高いので、住宅ローン控除で戻ってくる金額よりも、払う利息のほうが大きくなっています。待つ意味がありません。"
+        + "完済までの差は " + yen(Math.abs(diff)) + "。";
+    }
+
+    document.getElementById("whyHead").textContent =
+      !hasExtra ? "なぜ、いま返しても得しないのか"
+      : !hasDed ? "なぜ、いま返したほうが得なのか"
+      : (waitBetter && !isEven) ? "なぜ、いま返しても得しないのか"
+      : "いま返すのと、控除が終わってから返すのとの差";
+
+    // このカードは「なぜ効かないか」の仕組みを見せる場所。
+    // 入力から出した金額を使うと足し算の出どころが読めず、かえって混乱する。
+    // 誰にとっても同じ100万円で固定し、あなたの実額は下の1行だけに出す。
+    var U = 1000000;
+    var uTxt = "100万円";
+    document.getElementById("unitNote").textContent = "誰でも同じ100万円の例です";
+    document.getElementById("unitLead").innerHTML =
+      "<b>いま手元に100万円あったとします。</b>それを<b>いま返す</b>のと、"
+      + "<b>住宅ローン控除が終わってから返す</b>のとで、どれだけ違うかを見ます。"
+      + "<br><span class='cap'>あなたの計画でいくら変わるかは、このカードの下と、次の表に出ます。</span>";
+    document.getElementById("h1t").textContent = "いま " + uTxt + " を繰り上げ返済すると";
+    document.getElementById("h2t").textContent = "住宅ローン控除が終わったあとに、同じ " + uTxt + " を返すと";
+    var iy = U * o.rate, dy = U * o.dedRate;
+    document.getElementById("e1").textContent = signed(iy);
+    document.getElementById("e2").textContent = signed(-dy);
+    document.getElementById("e3").textContent = yen(iy - dy);
+    document.getElementById("e4").textContent = signed(iy);
+    document.getElementById("e5").textContent = "0円";
+    document.getElementById("e6").textContent = yen(iy);
+    var ratio = (iy - dy) > 0 ? (iy / (iy - dy)) : 0;
+    document.getElementById("e7").textContent = (o.dedRate > 0 && ratio >= 1.5)
+      ? "同じ金額でも、効き目がおよそ " + Math.round(ratio) + "倍 になります。"
+      : "住宅ローン控除がなくなるぶん、利息の削減がそのまま残ります。";
+
+    // あなたの計画との橋渡し
+    var br = document.getElementById("bridge");
+    var per = [];
+    if (o.monthly > 0) per.push("毎月 " + Math.round(o.monthly).toLocaleString("ja-JP") + "円");
+    if (o.yearly > 0) per.push("毎年 " + Math.round(o.yearly).toLocaleString("ja-JP") + "円");
+    if (o.lump > 0) per.push("一度に " + Math.round(o.lump).toLocaleString("ja-JP") + "円");
+    var perTxt = per.join("・");
+    if (!hasExtra){
+      br.innerHTML = "<b>上の「繰り上げ返済の計画」にあなたの金額を入れてください。</b>あなたの場合いくら変わるのかが、ここと下の表に出ます。";
+    } else if (!hasDed){
+      br.innerHTML = "<b>住宅ローン控除がないので、返した分がそのまま得になります。</b>早く返すほど得です。";
+    } else if (identical){
+      br.innerHTML = "<b>ここまでは「100万円あたりで、どちらが効くか」の話です。</b>"
+        + "あなたの計画（" + perTxt + "）は" + psY + "年" + psM + "月から、つまり控除が終わったあとなので、"
+        + "この比較での差は0円です。"
+        + (couldStartEarlier
+            ? "<b>効くのは別のところです。② の開始を今月にすると、合計 " + yen(earlierGain) + " 変わります。</b>"
+              + "上の判定にあるボタンで試せます。"
+            : "");
+    } else {
+      // 上の2ブロックは「率」の話。実際にいくら違うのかは、必ず金額で出す。
+      br.innerHTML = "<b>ただし、ここまでは100万円あたりの効き方です。</b>"
+        + "あなたの計画（" + perTxt + "）を完済まで通すと、"
+        + (waitBetter
+            ? o.dedEnd + "年の住宅ローン控除が終わるまで待って得するのは <b>合計 " + yen(diff) + "</b> です。"
+            : "いまから返すほうが <b>合計 " + yen(Math.abs(diff)) + "</b> 得です。")
+        + (isEven ? " 比率ほどの差にはなりません。貯められる期間が短いからです。" : "");
+    }
+
+    // comparison table
+    var rows = [
+      { n: "繰り上げ返済をしない<br><span class='sub'>今の返済額のまま</span>", r: none, mute: true,
+        short: "繰り上げ返済をしない" }
+    ];
+    // 計画が入っていなければ「あなたの計画」は「しない」と同じ行になる。並べない。
+    if (hasExtra){
+      rows.push({ n: (startsNow ? "今月から繰り上げ返済する"
+                                : psY + "年" + psM + "月から繰り上げ返済する")
+        + "<br><span class='sub'>" + (identical ? "控除が終わったあとなので、待つ計画と同じ" : "あなたの計画") + "</span>", r: now,
+        short: startsNow ? "今月から返す（あなたの計画）" : psY + "年" + psM + "月から返す（あなたの計画）" });
+    }
+    // 「待つ」行は、待つ意味があるときだけ出す。
+    // 控除がなければ wait は now と同じ計算になり、同額の行が2つ並んでしまう。
+    if (hasExtra && hasDed && (!identical || canStartEarlier)){
+      // identical のときの wait は now と同じ計画。
+      // ラベルどおりの「今月から貯めて、控除が終わったらまとめて返す」に差し替える。
+      // 早める余地がないとき（控除終了後の一括だけ）は、そもそも出さない。
+      rows.push(canStartEarlier
+        ? { n: (earlier.dump > 0
+                ? (o.dedEnd + 1) + "年1月に " + yen(earlier.dumpTotal || earlier.dump) + " をまとめて返す"
+                : (o.dedEnd + 1) + "年1月から繰り上げ返済する")
+              + "<br><span class='sub'>今月から貯め始めた場合"
+              + (earlier.dump > 0 ? "<br>（" + dumpBreakdown(earlier) + "）" : "") + "</span>", r: earlier,
+            short: "今月から貯めて " + (o.dedEnd + 1) + "年1月に返す" }
+        : { n: (o.dedEnd + 1) + "年1月から繰り上げ返済する<br><span class='sub'>"
+              + (wait.dump > 0
+                  ? "それまで貯めた分をこの月にまとめて入れる<br>（" + dumpBreakdown(wait) + "）"
+                  : "それまでは貯めておく") + "</span>", r: wait,
+            short: "控除が終わる " + (o.dedEnd + 1) + "年1月から返す" });
+    }
+    // 見出しの「3つ」は行数に合わせる。何と何を比べているのかも書く。
+    var cnt = rows.length;
+    var cntTxt = cnt + "つ";
+    document.getElementById("cmpHead").textContent =
+      cnt >= 2 ? cntTxt + "のやり方を比べる" : "いまのままだと、こうなります";
+    document.getElementById("cmpLead").innerHTML =
+      cnt >= 2
+        ? "比べているのは、この" + cntTxt + "です。"
+          + rows.map(function(r, i){ return "<b>" + (i + 1) + "　" + r.short + "</b>"; }).join("　／　")
+          + "<br>それぞれを<b>完済まで通したときの合計</b>で並べています。いちばん右の「本当に払う利息」がいちばん小さいやり方が、いちばん得です。"
+        : "上の「繰り上げ返済の計画」に金額を入れると、やり方を比べられます。";
+
+    var html = "";
+    rows.forEach(function(row){
+      var isBest = (!row.mute) && (row.r === best) && hasExtra;
+      var tag = isBest
+        ? (canStartEarlier ? " <span class='win'>← おすすめ</span>"
+           : identical ? " <span class='win'>← あなたの計画</span>"
+           : isEven ? " <span class='win'>← わずかに有利</span>"
+           : " <span class='win'>← おすすめ</span>")
+        : "";
+      html += "<tr" + (isBest ? ' class="best"' : "") + ">"
+        + "<td>" + row.n + tag + "</td>"
+        + "<td>" + (row.r.capped
+              ? "<b>60年たっても<br>終わりません</b>"
+              : row.r.end.y + "年" + row.r.end.m + "月<br><span style='font-size:12px;color:var(--faint)'>" + dur(row.r.months) + "</span>") + "</td>"
+        + "<td>" + yen(row.r.interest) + "</td>"
+        + "<td>" + yen(row.r.deduction) + "</td>"
+        + "<td>" + yen(row.r.fees) + "</td>"
+        + "<td><b>" + yen(row.r.net) + "</b></td>"
+        + "</tr>";
+    });
+    document.getElementById("cmp").innerHTML = html;
+
+    // おすすめの行が「具体的に何をすることなのか」と「結局いくら浮くのか」
+    var cn = document.getElementById("cmpNote");
+    var after = [];
+    if (o.monthly > 0) after.push("毎月 " + Math.round(o.monthly).toLocaleString("ja-JP") + "円");
+    if (o.yearly > 0) after.push("毎年 " + Math.round(o.yearly).toLocaleString("ja-JP") + "円");
+    var afterTxt = after.length ? after.join("・") + " を続けます。" : "そのあとの上乗せはありません。";
+    if (!hasExtra || !hasDed || now.capped){
+      // 60年で返し終わらない条件では、やり方の優劣を語っても意味がない
+      cn.hidden = true;
+    } else if (canStartEarlier){
+      cn.hidden = false;
+      cn.innerHTML = "<b>おすすめの行がやっていること。</b>"
+        + (earlier.dump > 0
+            ? "今月から繰り上げ返済に回すお金を手元に貯めて、" + (o.dedEnd + 1) + "年1月に <b>" + yen(earlier.dumpTotal || earlier.dump)
+              + "</b>（" + dumpBreakdown(earlier) + "）をまとめて銀行に入れます。そのあとは " + afterTxt
+            : "今月から繰り上げ返済に回すお金を手元に貯めて、" + (o.dedEnd + 1) + "年1月から返し始めます。")
+        + "<br><b>あなたの計画より、完済までに払う利息が " + yen(earlierGain) + " 少なくて済みます。</b>";
+    } else if (waitBetter){
+      cn.hidden = false;
+      cn.innerHTML = "<b>おすすめの行がやっていること。</b>"
+        + (wait.dump > 0
+            ? "住宅ローン控除が終わるまでは繰り上げ返済せず、手元に貯めます。" + (o.dedEnd + 1) + "年1月に <b>" + yen(wait.dumpTotal || wait.dump)
+              + "</b>（" + dumpBreakdown(wait) + "）をまとめて銀行に入れます。そのあとは " + afterTxt
+            : "住宅ローン控除が終わる" + (o.dedEnd + 1) + "年1月までは繰り上げ返済せず、そこから返し始めます。")
+        + "<br><b>あなたの計画より、完済までに払う利息が " + yen(diff) + " 少なくて済みます。</b>"
+        + (isEven ? " 貯めておける期間が短いので、差は小さくなります。" : "");
+    } else if (Math.abs(diff) < 1){
+      // 計画がすでに控除の終わったあとから始まっていて、早める余地もない場合。
+      // 差は0なので「◯円多くなります」とは言えない。
+      cn.hidden = false;
+      cn.innerHTML = "<b>あなたの計画は、すでに住宅ローン控除が終わったあとから始まります。</b>"
+        + "だから「いま返す」と「控除が終わるまで待つ」が同じ計画になり、<b>差は0円</b>です。"
+        + (couldStartEarlier
+            ? " もっと早くお金を用意できるなら、② の開始を今月にすると <b>" + yen(earlierGain)
+              + "</b> 変わります。上の判定にあるボタンで試せます。"
+            : " もっと早くお金を用意できるなら、上の「繰り上げ返済の計画」の年月を早めてみてください。");
+    } else {
+      cn.hidden = false;
+      cn.innerHTML = "<b>貯めるより、いま返すほうが得です。</b>"
+        + (o.dedEnd + 1) + "年1月まで貯めておくやり方だと、完済までに払う利息が "
+        + yen(Math.abs(diff)) + " 多くなります。あなたの計画のまま進めてください。";
+    }
+
+    // 控除で戻るお金が払う利息を上回ると「本当に払う利息」がマイナスになる。
+    // 計算は正しいが、マイナスの数字だけ出ても意味が伝わらないので説明を添える。
+    var nn = document.getElementById("negNote");
+    var anyNeg = rows.some(function(row){ return row.r.net < 0; });
+    if (anyNeg){
+      nn.hidden = false;
+      nn.innerHTML = "<b>「本当に払う利息」がマイナスになっています。</b>"
+        + "銀行に払う利息より、<b>住宅ローン控除で戻ってくるお金のほうが多い</b>という意味です。"
+        + "利息を払っているのではなく、差し引きでプラスになっている状態です。"
+        + "<br>この間は<b>繰り上げ返済を急ぐ理由がありません。</b>返すほど、戻ってくるお金が減ります。"
+        + "住宅ローン控除が終わってから返すほうが有利です。";
+    } else { nn.hidden = true; }
+
+    // 期間短縮型は控除の「返済期間10年以上」要件を外すことがある
+    var tw = document.getElementById("termWarn");
+    if (hasExtra && hasDed && o.kind === "term"){
+      tw.hidden = false;
+      tw.innerHTML = "<b>期間短縮型で返すときの注意。</b>"
+        + "住宅ローン控除は「返済期間が10年以上あること」が条件です。"
+        + "繰り上げ返済で<b>返済期間が10年未満になると、その年から控除が受けられなくなります。</b>"
+        + "控除を受けている間に期間を大きく縮めるときは、必ず銀行か税務署に確認してください。"
+        + "返済額軽減型なら返済期間は変わりません（「繰り上げ返済のしかたを設定する」で切り替えられます）。";
+    } else { tw.hidden = true; }
+
+    // 手数料が利息の削減を食いつぶしていないか
+    var fn = document.getElementById("feeNote");
+    var saved = none.interest - best.interest;
+    if (hasExtra && best.fees > 0 && saved > 0 && best.fees >= saved * 0.3){
+      fn.hidden = false;
+      fn.innerHTML = "手数料の合計が <b>" + yen(best.fees) + "</b>。"
+        + "繰り上げ返済で減らせる利息 <b>" + yen(saved) + "</b> の "
+        + Math.round(best.fees / saved * 100) + "％ が手数料に消えています。"
+        + (best.fees >= saved ? "この条件では、繰り上げ返済しないほうが得です。" : "")
+        + " 毎月ではなく年に1回まとめる、ネットから手続きする、などで回数を減らしてください。";
+    } else { fn.hidden = true; }
+
+    // milestones
+    var mh = "";
+    best.marks.forEach(function(k){
+      mh += "<div class='mile'><span class='lbl'>残り " + k.v.toLocaleString("ja-JP") + "円 を切る</span>"
+         + "<span class='val'>" + k.y + "年" + k.m + "月</span></div>";
+    });
+    mh += "<div class='mile fin'><span class='lbl'>完済</span><span class='val'>"
+        + (best.capped ? "60年以内には終わりません" : best.end.y + "年" + best.end.m + "月（" + dur(best.months) + "）")
+        + "</span></div>";
+    document.getElementById("miles").innerHTML = mh;
+
+    // flip rate
+    var flipEl = document.getElementById("flip");
+    var flipTxt = document.getElementById("flipTxt");
+    if (!hasDed || !hasExtra){
+      flipEl.textContent = "―";
+      flipTxt.textContent = hasDed
+        ? "毎月いくら繰り上げ返済に回せるかを入れると、この線が出ます。"
+        : "住宅ローン控除を受けていないので、この線はありません。返せるときに返すのが得です。";
+    } else {
+      // 計画が住宅ローン控除の終了後から始まると、「待つ」と「あなたの計画」が
+      // 同じものになって比べられない。そこで同じお金を今月用意できたと仮定して線を出す。
+      var oFlip = identical
+        ? Object.assign({}, o, { monStartY: o.sy, monStartM: o.sm,
+                                 yearStartY: o.sy, lumpY: o.sy, lumpM: o.sm })
+        : o;
+      var flip = findFlip(oFlip) * 100;
+      var ceil = o.pay * 12 / o.bal * 100;   // これ以上の金利では返済が成り立たない
+      if (flip >= ceil - 0.05){
+        flipEl.textContent = "―";
+        flipTxt.textContent = "この条件では、金利がいくらになっても待つほうが得になります。"
+          + (o.fee > 0 ? " 繰り上げ返済の手数料が大きいことが原因です。手数料を下げるか、回数を減らせば結果が変わります。" : "");
+      } else {
+        flipEl.textContent = flip.toFixed(2) + "％";
+        var gap = flip - num(el.rate.value);
+        flipTxt.textContent = "この線は、あなたが入力した条件（残高・控除の割合と終わる年・預金金利・手数料・返し方）で計算したものです。"
+          + "一般的な目安ではありません。あなたの場合は、金利が " + flip.toFixed(2) + "％ を超えたら、住宅ローン控除の期間中でも返したほうが得になります。"
+          + (gap > 0 ? "今の金利まで、あと " + gap.toFixed(2) + "％です。" : "今の金利は、すでにこの線を超えています。")
+          + (identical ? "（あなたの計画は" + psY + "年" + psM + "月からですが、この線は「同じお金を今月用意できたら」で計算しています）" : "")
+          + " 早く返すと年末をまたぐ回数のぶんだけ住宅ローン控除を失うので、この線は「預金の金利＋控除の割合」より高くなります。";
+      }
+    }
+
+    // ── ①②③ それぞれ「この行だけ」を入れたらどうなるかを、行の下に出す
+    (function(){
+      var rows = [
+        { id:"fxMon",  on:o.monthly>0, only:{monthly:o.monthly, yearly:0, lump:0} },
+        { id:"fxYear", on:o.yearly>0,  only:{monthly:0, yearly:o.yearly,  lump:0} },
+        { id:"fxLump", on:o.lump>0,    only:{monthly:0, yearly:0, lump:o.lump } }
+      ];
+      var many = ((o.monthly>0)+(o.yearly>0)+(o.lump>0)) >= 2;
+      // 注意書きは、使っている行のいちばん下に1回だけ出す（毎行に出すとうるさい）
+      var lastOn = null;
+      rows.forEach(function(rw){ if (rw.on) lastOn = rw.id; });
+      rows.forEach(function(rw){
+        var e = document.getElementById(rw.id); if (!e) return;
+        if (!rw.on){ e.className = "rowfx off"; e.innerHTML = ""; return; }
+        var oo = Object.assign({}, o, rw.only);
+        var a = simulate(Object.assign({}, oo, { mode:"now"  }));
+        var b = simulate(Object.assign({}, oo, { mode:"wait" }));
+        var r = (hasDed && b.net < a.net) ? b : a;
+        e.className = "rowfx";
+        e.innerHTML = "<b>この行だけ</b>で計算すると ── 完済 <b>" + ymTxt(o.sy, o.sm, r.months)
+          + "</b>、本当に払う利息 <b>" + yen(r.net) + "</b>"
+          + "（繰り上げ返済をしない場合より <b>" + yen(none.net - r.net) + "</b> 少ない）"
+          + (many && rw.id === lastOn
+              ? "<br>※ この数字は、<b>その行だけを使った場合</b>のものです。"
+                + "行どうしを足しても、①②③を合わせた結果にはなりません。合わせた結果は下の判定と表に出ます。"
+              : "");
+      });
+    })();
+
+    draw(now, alt, none, o.bal);
+  }
+
+  document.getElementById("goalBtn").addEventListener("click", function(){
+    var txt = document.getElementById("goalAdd").textContent.replace(/[^0-9]/g, "");
+    if (!txt) return;
+    el.monthly.value = txt;
+    el.monStartY.value = el.sy.value;
+    el.monStartM.value = el.sm.value;
+    render();
+    el.monthly.closest(".card").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.getElementById("earlyBtn").addEventListener("click", function(){
+    // 提案どおりに入力そのものを書き換える。画面の数字は必ず入力と一致させる。
+    if (num(el.yearly.value) > 0) el.yearStartY.value = el.sy.value;
+    if (num(el.monthly.value) > 0){
+      el.monStartY.value = el.sy.value;
+      el.monStartM.value = el.sm.value;
+    }
+    render();
+    el.monthly.closest(".card").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.getElementById("tryBtn").addEventListener("click", function(){
+    el.monthly.value = 10000;
+    el.monStartY.value = el.sy.value;
+    el.monStartM.value = el.sm.value;
+    render();
+    el.monthly.closest(".card").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  ids.forEach(function(k){
+    el[k].addEventListener("input", render);
+    el[k].addEventListener("change", render);
+  });
+  window.addEventListener("resize", render);
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", render);
+  }
+  render();
+})();
+</script>
+
