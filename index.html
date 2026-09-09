@@ -221,6 +221,9 @@ h1{
 .nowline .ng{color:#E8232A;font-weight:700}
 .nowline .cap{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
 .nowline .gap{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+input::placeholder{color:#C3BBB0;opacity:1}
+.nowline .ask{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;line-height:1.7}
+.nowline .ask b{color:var(--ink)}
 .nowline .fxt td.up{color:#E8232A;font-weight:700}
 .nowline table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:13.5px}
 .nowline .fxt td{padding:3px 14px 3px 0;text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
@@ -437,13 +440,13 @@ footer strong{color:var(--muted)}
 
       <div class="field">
         <label for="endY">契約の最終返済日（返済予定表・契約書に書いてある月）</label>
-        <div class="inputrow"><input id="endY" type="number" step="1" placeholder="2053"><span class="unit">年</span><input id="endM" type="number" step="1" min="1" max="12" placeholder="5"><span class="unit">月</span></div>
+        <div class="inputrow"><input id="endY" type="number" step="1" placeholder="—"><span class="unit">年</span><input id="endM" type="number" step="1" min="1" max="12" placeholder="—"><span class="unit">月</span></div>
         <span class="hint">分からなければ空欄でOK。入れると「今の返済額のままで契約どおりに終わるか」を判定します</span>
       </div>
 
       <div class="field">
         <label for="revY">次に返済額が見直される月（変動金利の方）</label>
-        <div class="inputrow"><input id="revY" type="number" step="1" placeholder="2029"><span class="unit">年</span><input id="revM" type="number" step="1" min="1" max="12" placeholder="1"><span class="unit">月</span></div>
+        <div class="inputrow"><input id="revY" type="number" step="1" placeholder="—"><span class="unit">年</span><input id="revM" type="number" step="1" min="1" max="12" placeholder="—"><span class="unit">月</span></div>
         <span class="hint">分からなければ空欄でOK。ふつうは5年に1回。入れると<b>そのとき返済額がいくらになるか</b>を出します</span>
       </div>
 
@@ -1082,6 +1085,14 @@ footer strong{color:var(--muted)}
         } else {
           txt += "<div class=\"gap\">契約の最終返済日 <b>" + ey + "年" + em + "月</b> と、ぴったり合っています。</div>";
         }
+      }
+      var askEnd = !(ey > 1900 && em >= 1 && em <= 12);
+      var askRev = !(Math.round(num(document.getElementById("revY").value)) > 1900);
+      if (askEnd || askRev){
+        var ask = [];
+        if (askEnd) ask.push("<b>契約の最終返済日</b>を入れると、いまの返済額で契約どおりに終わるかを判定します");
+        if (askRev) ask.push("<b>次に返済額が見直される月</b>を入れると、そのとき返済額がいくらになるかを出します");
+        txt += "<div class=\"ask\">↑ " + ask.join("<br>↑ ") + "</div>";
       }
       e.innerHTML = txt;
     })();
