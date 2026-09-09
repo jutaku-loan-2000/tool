@@ -215,6 +215,11 @@ h1{
 .rowfx{display:block;margin-top:8px;padding:9px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px;line-height:1.65;color:var(--ink)}
 .rowfx b{font-variant-numeric:tabular-nums}
 .rowfx.off{display:none}
+.nowline{grid-column:1/-1;margin-top:6px;padding:16px 20px;border-radius:12px;
+ background:var(--surface-2);border:1px solid var(--line);font-size:15px;line-height:1.7;color:var(--ink)}
+.nowline b{font-variant-numeric:tabular-nums;font-size:19px}
+.nowline .warn{color:#E8232A;font-weight:700}
+.nowline .cap{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
 .rowfx table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:12.5px}
 .rowfx .fxt th{font-weight:600;color:#8A8177;text-align:right;padding:2px 12px 6px;font-size:11.5px;white-space:nowrap}
 .rowfx .fxt th:first-child{text-align:left;padding-left:0}
@@ -424,6 +429,8 @@ footer strong{color:var(--muted)}
         <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
         <span class="hint"><b>ここを起点に、完済の年月を計算します。</b>通帳や銀行アプリで残高を見た月を入れてください（初期値は今月）</span>
       </div>
+
+      <div class="nowline" id="nowLine"></div>
     </div>
 
     <details class="adv">
@@ -1017,12 +1024,28 @@ footer strong{color:var(--muted)}
       document.getElementById("chipTxt").textContent = "数字を確認";
       document.getElementById("vHead").textContent = "毎月の返済額が、利息より少なくなっています。数字を確認してください。";
       document.getElementById("vSub").textContent = "この条件だと、ローンが減りません。返済額か金利を見直してください。";
+      var nl = document.getElementById("nowLine");
+      if (nl) nl.innerHTML = "<span class=\"warn\">毎月の返済額が、利息より少なくなっています。</span>"
+        + "<span class=\"cap\">この条件だとローンが減らないので、完済の年月が出せません。</span>";
       return;
     }
 
     var now = simulate(Object.assign({}, o, { mode: "now" }));
     var wait = simulate(Object.assign({}, o, { mode: "wait" }));
     var none = simulate(Object.assign({}, o, { mode: "none" }));
+
+    (function(){
+      var e = document.getElementById("nowLine"); if (!e) return;
+      if (!isFinite(none.months) || none.months <= 0 || none.months > 1200){
+        e.innerHTML = "<span class=\"warn\">この数字だと、完済まで100年以上かかります。</span>"
+          + "<span class=\"cap\">残高・金利・毎月の返済額のどれかを見直してください。</span>";
+        return;
+      }
+      e.innerHTML = "このまま繰り上げ返済をしないと、<b>" + ymTxt(o.sy, o.sm, none.months) + "</b> に完済します"
+        + "（あと " + durTxt(none.months) + "）"
+        + "<span class=\"cap\">今の金利のまま、毎月 " + yen(o.pay) + " を払い続けた場合です。"
+        + "これが、下の判定で比べる基準になります。</span>";
+    })();
 
     var diff = now.net - wait.net;           // >0 なら待つほうが得
     var hasDed = o.dedRate > 0 && o.dedEnd >= o.sy;
