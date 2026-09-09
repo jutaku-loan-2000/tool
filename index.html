@@ -418,6 +418,12 @@ footer strong{color:var(--muted)}
         <div class="inputrow"><input id="dedend" type="number" step="1" value="2027"><span class="unit">年分</span></div>
         <span class="hint">入居した年から10年目、または13年目</span>
       </div>
+
+      <div class="field">
+        <label for="sy">上のローン残高は、いつ時点のものですか</label>
+        <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
+        <span class="hint"><b>ここを起点に、完済の年月を計算します。</b>通帳や銀行アプリで残高を見た月を入れてください（初期値は今月）</span>
+      </div>
     </div>
 
     <details class="adv">
@@ -445,11 +451,6 @@ footer strong{color:var(--muted)}
           <div class="inputrow"><input id="dep" type="number" step="0.01" value="0"><span class="unit">％</span></div>
           <span class="hint"><b>0のままでOK。</b>預金の金利は将来変わるので、<b>入れないほうが安全</b>です。今の金利で試したいときだけ入れてください（税引前）</span>
         </div>
-        <div class="field">
-          <label for="sy">今は何年何月</label>
-          <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
-        </div>
-
       </div>
     </details>
   </div>
@@ -763,6 +764,14 @@ footer strong{color:var(--muted)}
   function num(x){ var v = parseFloat(x); return isFinite(v) ? v : 0; }
   function yen(v){ return Math.round(v).toLocaleString("ja-JP") + "円"; }
   function signed(v){ return (v >= 0 ? "+" : "−") + Math.round(Math.abs(v)).toLocaleString("ja-JP") + "円"; }
+
+  // 起点は今月を初期値にする（開いた月によって完済の年月が変わるため）
+  (function(){
+    var d = new Date();
+    var sy = document.getElementById("sy"), sm = document.getElementById("sm");
+    if (sy) sy.value = d.getFullYear();
+    if (sm) sm.value = d.getMonth() + 1;
+  })();
 
   function durTxt(m){
     m = Math.round(m);
