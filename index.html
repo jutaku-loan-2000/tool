@@ -221,6 +221,10 @@ h1{
 .nowline .ng{color:#E8232A;font-weight:700}
 .nowline .cap{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
 .nowline .gap{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.nowline .fxt td.up{color:#E8232A;font-weight:700}
+.nowline table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:13.5px}
+.nowline .fxt td{padding:3px 14px 3px 0;text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.nowline .fxt td:first-child{color:var(--muted);min-width:130px}
 .rowfx table.fxt{border-collapse:collapse;margin:8px 0 2px;font-size:12.5px}
 .rowfx .fxt th{font-weight:600;color:#8A8177;text-align:right;padding:2px 12px 6px;font-size:11.5px;white-space:nowrap}
 .rowfx .fxt th:first-child{text-align:left;padding-left:0}
@@ -435,6 +439,12 @@ footer strong{color:var(--muted)}
         <label for="endY">契約の最終返済日（返済予定表・契約書に書いてある月）</label>
         <div class="inputrow"><input id="endY" type="number" step="1" placeholder="2053"><span class="unit">年</span><input id="endM" type="number" step="1" min="1" max="12" placeholder="5"><span class="unit">月</span></div>
         <span class="hint">分からなければ空欄でOK。入れると「今の返済額のままで契約どおりに終わるか」を判定します</span>
+      </div>
+
+      <div class="field">
+        <label for="revY">次に返済額が見直される月（変動金利の方）</label>
+        <div class="inputrow"><input id="revY" type="number" step="1" placeholder="2029"><span class="unit">年</span><input id="revM" type="number" step="1" min="1" max="12" placeholder="1"><span class="unit">月</span></div>
+        <span class="hint">分からなければ空欄でOK。ふつうは5年に1回。入れると<b>そのとき返済額がいくらになるか</b>を出します</span>
       </div>
 
       <div class="nowline" id="nowLine"></div>
@@ -757,7 +767,7 @@ footer strong{color:var(--muted)}
     if (sm) sm.value = d.getMonth() + 1;
   })();
 
-  ["endY","endM"].forEach(function(id){
+  ["endY","endM","revY","revM"].forEach(function(id){
     var e = document.getElementById(id);
     if (e) e.addEventListener("input", function(){ render(); });
   });
@@ -1038,7 +1048,33 @@ footer strong{color:var(--muted)}
             + "いまの返済額のままだと <b class=\"ng\">" + durTxt(over) + " 足りません</b>。"
             + "<span class=\"cap\">終わりの日は契約で決まっていて動きません。"
             + "足りない分は、5年ごとの見直しで<b>毎月の返済額が上がって</b>調整されます"
-            + "（変動金利の「しわ寄せ」）。上の年月は、その値上げがなかった場合の数字です。</span></div>";
+            + "（変動金利の「しわ寄せ」）。上の年月は、その値上げがなかった場合の数字です。</span>";
+
+          var ry = Math.round(num(document.getElementById("revY").value));
+          var rm = Math.round(num(document.getElementById("revM").value));
+          if (ry > 1900 && rm >= 1 && rm <= 12){
+            var untilRev = (ry*12 + (rm-1)) - (o.sy*12 + (o.sm-1));   // 見直しまでの支払回数
+            var restCnt  = (ey*12 + (em-1)) - (ry*12 + (rm-1)) + 1;   // 見直し後の残り回数
+            if (untilRev >= 0 && restCnt > 0){
+              var mr = o.rate / 12, bb = o.bal;
+              for (var k = 0; k < untilRev; k++) bb = bb - (o.pay - bb * mr);
+              var np = mr > 0 ? bb * mr / (1 - Math.pow(1 + mr, -restCnt)) : bb / restCnt;
+              var cap = o.pay * 1.25;
+              txt += "<div class=\"gap\">次の見直し（<b>" + ry + "年" + rm + "月</b>）で、毎月の返済額はこうなる計算です"
+                + "<table class=\"fxt\">"
+                + "<tr><td>そのときの残高</td><td><b>" + yen(bb) + "</b></td><td></td></tr>"
+                + "<tr><td>残りの回数</td><td><b>" + restCnt + "回</b></td><td>" + ey + "年" + em + "月まで</td></tr>"
+                + "<tr><td>新しい返済額</td><td><b>" + yen(np) + "</b></td><td class=\"up\">"
+                + (np > o.pay ? "いまより +" + yen(np - o.pay) : "いまより " + yen(np - o.pay)) + "</td></tr>"
+                + "</table>"
+                + "<span class=\"cap\">いまの金利 " + (o.rate*100).toFixed(2) + "％ が続いた場合の計算です。"
+                + "返済額の見直しには<b>「前回の1.25倍まで」</b>という決まりもあります"
+                + "（あなたの場合の上限 " + yen(cap) + "）。"
+                + (np > cap ? "<b class=\"ng\">この計算は上限を超えているので、実際は上限で止まり、残った分はさらに後ろへ繰り延べられます。</b>" : "")
+                + "</span></div>";
+            }
+          }
+          txt += "</div>";
         } else if (over < 0){
           txt += "<div class=\"gap\">契約の最終返済日は <b>" + ey + "年" + em + "月</b>。"
             + "いまの返済額なら <b>" + durTxt(-over) + " 早く</b>終わる計算です。"
