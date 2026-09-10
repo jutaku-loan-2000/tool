@@ -234,6 +234,9 @@ input::placeholder{color:#C3BBB0;opacity:1}
 .rowfx .fxt td{padding:3px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rowfx .fxt td:first-child{text-align:left;color:#8A8177;padding-left:0}
 .rowfx .fxt td:last-child{color:#2E7D5B;font-weight:700;padding-right:0}
+.rowfx .hold{margin-top:10px;padding:12px 14px;border-radius:10px;background:#FFF6EC;
+ border:1px solid #E8D9C2;font-size:13px;line-height:1.8}
+.rowfx .hold .cap{color:#8A8177;font-size:12px}
 .rowtag{
   margin-left:9px;font-size:11px;font-weight:700;letter-spacing:.04em;
   padding:2px 9px;border-radius:999px;vertical-align:1px;white-space:nowrap;
@@ -1463,6 +1466,14 @@ footer strong{color:var(--muted)}
           + "<tr><td>本当に払う利息</td><td>" + yen(none.net) + "</td>"
           + "<td><b>" + yen(r.net) + "</b></td>"
           + "<td>" + (saved > 0 ? yen(saved) + " 減る" : "変わらない") + "</td></tr></table>"
+          + ((r === b && r.dump > 0 && r.dumpAt)
+              ? "<div class=\"hold\"><b>この行のお金は、こう動きます</b>"
+                + "<br>住宅ローン控除が終わる <b>" + o.dedEnd + "年12月</b> まで、返さずに<b>貯めておきます</b>。"
+                + "<br>そして <b>" + r.dumpAt.y + "年" + r.dumpAt.m + "月</b> に、貯まった <b>"
+                + yen(r.dumpTotal || r.dump) + "</b> をまとめて返します。"
+                + (dumpBreakdown(r) ? "<br><span class=\"cap\">内訳　" + dumpBreakdown(r) + "</span>" : "")
+                + "</div>"
+              : "")
           + (rw.id === lastOn
               ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の返済額はそのままで"
                 + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が変わります。"
