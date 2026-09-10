@@ -663,7 +663,7 @@ footer strong{color:var(--muted)}
     <div class="goal">
       <div class="goal-line"><span class="lbl">今の返済に上乗せする額（毎月）</span><span id="goalAdd" class="goal-big">―</span></div>
       <p id="goalSub" class="cap"></p>
-      <button type="button" id="goalBtn" class="tryBtn" hidden>この金額を「① 毎月ずつ入れる」に入れる</button>
+      <button type="button" id="goalBtn" class="tryBtn" hidden>この金額を ① の欄に入れて計算する</button>
     </div>
   </div>
 </section>
@@ -1195,6 +1195,7 @@ footer strong{color:var(--muted)}
           + " ＝ <b>毎月 " + yen(o.pay + need) + " を用意する</b>ことになります。"
           + (othersTxt ? "<br>" + othersTxt : "")
           + (hasDedRaw ? "<br>住宅ローン控除が終わるまで貯めておくやり方なら、これより少し少なくて足ります。" : "");
+        goalBtn.textContent = "この " + yen(need) + " を ① の欄に入れて計算する";
         goalBtn.hidden = false;
       }
     }
