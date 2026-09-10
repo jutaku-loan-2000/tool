@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>返すか、待つか</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,6 +88,7 @@ body{
 body,p,li,label,td,th,h1,h2,h3,h4,.hint,.cap,.note,.lede,.lead-note{
   word-break:auto-phrase;line-break:strict;overflow-wrap:break-word;
 }
+.nb{display:inline-block}
 
 /* ---------- header ---------- */
 header{display:flex;flex-direction:column;gap:8px;padding-bottom:18px;border-bottom:1px solid var(--line)}
@@ -403,12 +409,14 @@ footer strong{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
+</head>
+<body>
 <div class="wrap">
 
 <header>
   <div class="eyebrow">住宅ローン控除を計算に入れた繰り上げ返済シミュレーター</div>
   <h1>返すか、待つか</h1>
-  <p class="lede">控除を受けている間は、返しても戻ってくるお金が同じだけ減ります。<br>いま返すか、控除が終わるまで待つか。あなたの数字で判定します。</p>
+  <p class="lede"><span class="nb">控除を受けている間は、</span><span class="nb">返しても戻ってくるお金が同じだけ減ります。</span><br><span class="nb">いま返すか、控除が終わるまで待つか。</span><span class="nb">あなたの数字で判定します。</span></p>
 </header>
 
 <section class="card">
@@ -1563,3 +1571,6 @@ footer strong{color:var(--muted)}
 })();
 </script>
 
+
+</body>
+</html>
