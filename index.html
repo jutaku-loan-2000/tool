@@ -77,10 +77,15 @@ body{
   line-height:1.75;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:880px;margin:0 auto;padding:40px 20px 80px;display:flex;flex-direction:column;gap:36px}
+.wrap{max-width:880px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:22px}
+
+/* 日本語は文節で折り返す。「戻って／くるお金」のような切れ方を防ぐ */
+body,p,li,label,td,th,h1,h2,h3,h4,.hint,.cap,.note,.lede,.lead-note{
+  word-break:auto-phrase;line-break:strict;overflow-wrap:break-word;
+}
 
 /* ---------- header ---------- */
-header{display:flex;flex-direction:column;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+header{display:flex;flex-direction:column;gap:8px;padding-bottom:18px;border-bottom:1px solid var(--line)}
 .eyebrow{
   font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;
   display:flex;align-items:center;gap:10px;
@@ -91,7 +96,7 @@ h1{
   font-weight:700;font-size:clamp(30px,5.6vw,44px);line-height:1.3;margin:0;
   text-wrap:balance;letter-spacing:.01em;
 }
-.lede{margin:0;color:var(--muted);font-size:15px;max-width:60ch}
+.lede{margin:0;color:var(--muted);font-size:15px;max-width:44ch;line-height:1.7}
 
 /* ---------- cards ---------- */
 .card{
@@ -100,18 +105,18 @@ h1{
 }
 .card-hd{
   display:flex;align-items:baseline;justify-content:space-between;gap:12px;
-  padding:18px 22px;border-bottom:1px solid var(--line);
+  padding:13px 20px;border-bottom:1px solid var(--line);
 }
 .card-hd h2{
   font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
   font-size:18px;font-weight:600;margin:0;letter-spacing:.02em;
 }
 .card-hd .note{font-size:12px;color:var(--faint)}
-.card-bd{padding:22px}
+.card-bd{padding:18px 20px}
 
 /* ---------- form ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 20px}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 18px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label{font-size:13px;font-weight:500;color:var(--muted)}
 .field .hint{font-size:11.5px;color:var(--faint);line-height:1.5}
 .inputrow{display:flex;align-items:stretch;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);overflow:hidden}
@@ -403,7 +408,7 @@ footer strong{color:var(--muted)}
 <header>
   <div class="eyebrow">住宅ローン控除を計算に入れた繰り上げ返済シミュレーター</div>
   <h1>返すか、待つか</h1>
-  <p class="lede">住宅ローン控除を受けている間は、繰り上げ返済をしても「戻ってくるお金」が同じだけ減ります。今すぐ返すのと、控除が終わってから返すのと、どちらが得か。あなたの数字で判定します。</p>
+  <p class="lede">控除を受けている間は、返しても戻ってくるお金が同じだけ減ります。<br>いま返すか、控除が終わるまで待つか。あなたの数字で判定します。</p>
 </header>
 
 <section class="card">
@@ -438,21 +443,21 @@ footer strong{color:var(--muted)}
       </div>
 
       <div class="field">
-        <label for="sy">上のローン残高は、いつ時点のものですか</label>
+        <label for="sy">この残高は、いつ時点？</label>
         <div class="inputrow"><input id="sy" type="number" step="1" value="2026"><span class="unit">年</span><input id="sm" type="number" step="1" min="1" max="12" value="9"><span class="unit">月</span></div>
-        <span class="hint"><b>ここを起点に、完済の年月を計算します。</b>通帳や銀行アプリで残高を見た月を入れてください（初期値は今月）</span>
+        <span class="hint">完済の年月は<b>ここを起点</b>に計算します（初期値は今月）</span>
       </div>
 
       <div class="field">
-        <label for="endY">契約の最終返済日（返済予定表・契約書に書いてある月）</label>
+        <label for="endY">契約の最終返済日</label>
         <div class="inputrow"><input id="endY" type="number" step="1" placeholder="—"><span class="unit">年</span><input id="endM" type="number" step="1" min="1" max="12" placeholder="—"><span class="unit">月</span></div>
-        <span class="hint">分からなければ空欄でOK。入れると「今の返済額のままで契約どおりに終わるか」を判定します</span>
+        <span class="hint">返済予定表・契約書の最後の月。空欄でもOK</span>
       </div>
 
       <div class="field">
-        <label for="revY">次に返済額が見直される月（変動金利の方）</label>
+        <label for="revY">次に返済額が見直される月</label>
         <div class="inputrow"><input id="revY" type="number" step="1" placeholder="—"><span class="unit">年</span><input id="revM" type="number" step="1" min="1" max="12" placeholder="—"><span class="unit">月</span></div>
-        <span class="hint">分からなければ空欄でOK。ふつうは5年に1回。入れると<b>そのとき返済額がいくらになるか</b>を出します</span>
+        <span class="hint">変動金利の方。ふつうは5年に1回。空欄でもOK</span>
       </div>
 
       <div class="nowline" id="nowLine"></div>
@@ -498,7 +503,7 @@ footer strong{color:var(--muted)}
 <section class="card">
   <div class="card-hd"><h2>繰り上げ返済の計画</h2><span class="note">3つを組み合わせられます</span></div>
   <div class="card-bd">
-    <p class="lead-note"><b>①②③は足し算されて、1つの計画になります。</b>別々に比べたいときは、1つだけ入れて計算してください。<b>金額が0の行は使いません。</b>日付が入っていても効きません。試しの数字で構いません。</p>
+    <p class="lead-note"><b>①②③は足し算されて、1つの計画になります。</b>別々に比べるときは1つだけ入れてください。<b>金額が0の行は使いません</b>（日付が入っていても効きません）。</p>
     <div class="grid">
 
       <div class="field wide">
@@ -508,7 +513,7 @@ footer strong{color:var(--muted)}
           <input id="monStartM" type="number" step="1" min="1" max="12" value="9"><span class="unit">月から 毎月</span>
           <input id="monthly" class="amt" type="number" step="1000" value="0"><span class="unit">円ずつ</span>
         </div>
-        <span class="hint"><b>返し始める月ではありません。</b>お金を用意できるようになる月を入れてください。実際にいつ返すかは、下の判定で決めます</span>
+        <span class="hint"><b>返し始める月ではなく</b>、お金を用意できる月。返す月は下の判定で決めます</span>
         <span class="rowfx off" id="fxMon"></span>
       </div>
 
@@ -519,7 +524,7 @@ footer strong{color:var(--muted)}
           <input id="yearMonth" type="number" step="1" min="1" max="12" value="12"><span class="unit">月に</span>
           <input id="yearly" class="amt" type="number" step="10000" value="0"><span class="unit">円ずつ</span>
         </div>
-        <span class="hint">「毎年12月のボーナスから50万円ずつ」のような使い方。<br><b>住宅ローン控除を受けている間に入れた分は、すぐ返さずに貯めておいて、控除が終わった月にまとめて返すやり方も一緒に計算します。</b></span>
+        <span class="hint">例：毎年12月のボーナスから。<b>控除中に入れた分は、貯めて控除が終わった月にまとめて返す計算も一緒に出します。</b></span>
         <span class="rowfx off" id="fxYear"></span>
       </div>
 
@@ -1043,8 +1048,7 @@ footer strong{color:var(--muted)}
       }
       var txt = "毎月 " + yen(o.pay) + " を払い続けると、<b>" + ymTxt(o.sy, o.sm, none.months)
         + "</b> に終わる計算です（あと " + durTxt(none.months) + "）"
-        + "<span class=\"cap\">いまの金利 " + (o.rate*100).toFixed(2) + "％ で、"
-        + "<b>毎月の返済額を変えずに</b>払い続けた場合の計算です。これが下の判定で比べる基準になります。</span>";
+        + "<span class=\"cap\">金利 " + (o.rate*100).toFixed(2) + "％ のまま、<b>返済額を変えずに</b>払った場合。下の判定で比べる基準です。</span>";
 
       var ey = Math.round(num(document.getElementById("endY").value));
       var em = Math.round(num(document.getElementById("endM").value));
@@ -1054,9 +1058,7 @@ footer strong{color:var(--muted)}
         if (over > 0){
           txt += "<div class=\"gap\">契約の最終返済日は <b>" + ey + "年" + em + "月</b>。"
             + "いまの返済額のままだと <b class=\"ng\">" + durTxt(over) + " 足りません</b>。"
-            + "<span class=\"cap\">終わりの日は契約で決まっていて動きません。"
-            + "足りない分は、5年ごとの見直しで<b>毎月の返済額が上がって</b>調整されます"
-            + "（変動金利の「しわ寄せ」）。上の年月は、その値上げがなかった場合の数字です。</span>";
+            + "<span class=\"cap\">終わりの日は動きません。足りない分は5年ごとの見直しで<b>返済額が上がって</b>調整されます（しわ寄せ）。上の年月は、その値上げがない場合の数字です。</span>";
 
           var ry = Math.round(num(document.getElementById("revY").value));
           var rm = Math.round(num(document.getElementById("revM").value));
@@ -1075,9 +1077,7 @@ footer strong{color:var(--muted)}
                 + "<tr><td>新しい返済額</td><td><b>" + yen(np) + "</b></td><td class=\"up\">"
                 + (np > o.pay ? "いまより +" + yen(np - o.pay) : "いまより " + yen(np - o.pay)) + "</td></tr>"
                 + "</table>"
-                + "<span class=\"cap\">いまの金利 " + (o.rate*100).toFixed(2) + "％ が続いた場合の計算です。"
-                + "返済額の見直しには<b>「前回の1.25倍まで」</b>という決まりもあります"
-                + "（あなたの場合の上限 " + yen(cap) + "）。"
+                + "<span class=\"cap\">金利 " + (o.rate*100).toFixed(2) + "％ が続いた場合。見直しには<b>「前回の1.25倍まで」</b>という決まりもあります（上限 " + yen(cap) + "）。"
                 + (np > cap ? "<b class=\"ng\">この計算は上限を超えているので、実際は上限で止まり、残った分はさらに後ろへ繰り延べられます。</b>" : "")
                 + "</span></div>";
             }
@@ -1480,22 +1480,17 @@ footer strong{color:var(--muted)}
                 + "<br>そして <b>" + r.dumpAt.y + "年" + r.dumpAt.m + "月</b> に、貯まった <b>"
                 + yen(r.dumpTotal || r.dump) + "</b> をまとめて返します。"
                 + (dumpBreakdown(r) ? "<br><span class=\"cap\">内訳　" + dumpBreakdown(r) + "</span>" : "")
-                + "<br><span class=\"cap\">貯めずにそのつど返すこともできます。"
-                + "そのやり方との差は、下の判定と表に出ています。</span></div>"
+                + "</div>"
               : (hasDed
                   ? "<div class=\"hold\"><b>この行のお金は、入れた月にそのまま返します。</b>"
-                    + "<br>控除が減るぶんより、利息が減るぶんのほうが大きいので、"
-                    + "貯めて待つより、そのつど返したほうが得になります。"
-                    + "<br><span class=\"cap\">貯めて待つやり方との差は、下の判定と表に出ています。</span></div>"
+                    + "<br>控除が減るぶんより利息が減るぶんのほうが大きいので、貯めずに返したほうが得です。</div>"
                   : ""))
           + (rw.id === lastOn
-              ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の返済額はそのままで"
-                + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が変わります。"
-                + "何もしなければ、契約どおりの日まで払い続けます。</span>"
+              ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の額はそのままで"
+                + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が動きます。</span>"
               : "")
           + (many && rw.id === lastOn
-              ? "<br><span style=\"color:#8A8177\">※ この数字は<b>その行だけ</b>を入れた場合のものです。"
-                + "行どうしを足しても、①②③を合わせた結果にはなりません。合わせた結果は下の判定と表に出ます。</span>"
+              ? "<br><span style=\"color:#8A8177\">※ この数字は<b>その行だけ</b>のものです。行を足しても①②③を合わせた結果にはなりません（下の判定と表に出ます）。</span>"
               : "");
       });
     })();
