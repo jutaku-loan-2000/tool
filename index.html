@@ -237,6 +237,8 @@ input::placeholder{color:#C3BBB0;opacity:1}
 .rowfx .hold{margin-top:10px;padding:12px 14px;border-radius:10px;background:#FFF6EC;
  border:1px solid #E8D9C2;font-size:13px;line-height:1.8}
 .rowfx .hold .cap{color:#8A8177;font-size:12px}
+.rowfx .way{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;
+ background:#EFE9DE;color:#6B6357;font-size:11.5px;font-weight:700;vertical-align:middle}
 .rowtag{
   margin-left:9px;font-size:11px;font-weight:700;letter-spacing:.04em;
   padding:2px 9px;border-radius:999px;vertical-align:1px;white-space:nowrap;
@@ -1457,7 +1459,13 @@ footer strong{color:var(--muted)}
         e.className = "rowfx";
         var shorter = none.months - r.months;
         var saved   = none.net - r.net;
+        var waited = (r === b && r.dump > 0 && r.dumpAt);
         e.innerHTML = "<b>この行だけ</b>を入れた場合"
+          + (hasDed
+              ? "<span class=\"way\">" + (waited
+                  ? "控除が終わるまで貯めて、まとめて返すやり方で計算"
+                  : "入れた月に、そのつど返すやり方で計算") + "</span>"
+              : "")
           + "<table class=\"fxt\"><tr><th></th><th>繰り上げ返済しない</th>"
           + "<th>この行を入れる</th><th></th></tr>"
           + "<tr><td>完済</td><td>" + ymTxt(o.sy, o.sm, none.months) + "</td>"
@@ -1466,14 +1474,20 @@ footer strong{color:var(--muted)}
           + "<tr><td>本当に払う利息</td><td>" + yen(none.net) + "</td>"
           + "<td><b>" + yen(r.net) + "</b></td>"
           + "<td>" + (saved > 0 ? yen(saved) + " 減る" : "変わらない") + "</td></tr></table>"
-          + ((r === b && r.dump > 0 && r.dumpAt)
+          + (waited
               ? "<div class=\"hold\"><b>この行のお金は、こう動きます</b>"
                 + "<br>住宅ローン控除が終わる <b>" + o.dedEnd + "年12月</b> まで、返さずに<b>貯めておきます</b>。"
                 + "<br>そして <b>" + r.dumpAt.y + "年" + r.dumpAt.m + "月</b> に、貯まった <b>"
                 + yen(r.dumpTotal || r.dump) + "</b> をまとめて返します。"
                 + (dumpBreakdown(r) ? "<br><span class=\"cap\">内訳　" + dumpBreakdown(r) + "</span>" : "")
-                + "</div>"
-              : "")
+                + "<br><span class=\"cap\">貯めずにそのつど返すこともできます。"
+                + "そのやり方との差は、下の判定と表に出ています。</span></div>"
+              : (hasDed
+                  ? "<div class=\"hold\"><b>この行のお金は、入れた月にそのまま返します。</b>"
+                    + "<br>控除が減るぶんより、利息が減るぶんのほうが大きいので、"
+                    + "貯めて待つより、そのつど返したほうが得になります。"
+                    + "<br><span class=\"cap\">貯めて待つやり方との差は、下の判定と表に出ています。</span></div>"
+                  : ""))
           + (rw.id === lastOn
               ? "<br><span style=\"color:#8A8177\">※ 繰り上げ返済（期間短縮型）は、毎月の返済額はそのままで"
                 + "<b>終わりの日を前に動かす</b>やり方です。だから完済の年月が変わります。"
